@@ -1,3 +1,4 @@
+{{- if UseSonarQube}}
 # SonarQube
 
 This short guide will help you set up SonarQube for your project.
@@ -36,3 +37,4 @@ The necessary files and configuration should already exist in this project so yo
 `sonar-project.properties` file.
 
 ![Change analysis mode](images/sonarqube-change-analysis-mode.png "Change analysis mode")
+{{- end}}

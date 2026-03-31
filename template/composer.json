@@ -25,7 +25,7 @@
         "barryvdh/laravel-ide-helper": "^3.5",
         "dg/bypass-finals": "^1.9",
         "fakerphp/faker": "^1.23",
-        "specsnl/code-style": "^5.0",
+        "specsnl/code-style": "^5.0.1",
         "specsnl/laravel-dump-server": "^2.0",
         "itsgoingd/clockwork": "^5.3",
         "larastan/larastan": "^3.0",

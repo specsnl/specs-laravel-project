@@ -21,7 +21,7 @@
     <exclude-pattern>resources/js</exclude-pattern>
     <exclude-pattern>coverage</exclude-pattern>
 
-    <rule ref="Ilyes512CodingStandard"/>
+    <rule ref="SpecsCodingStandard"/>
 
     <rule ref="PSR1.Classes.ClassDeclaration.MissingNamespace">
         <exclude-pattern>database/migrations</exclude-pattern>

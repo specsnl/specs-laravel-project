@@ -1,0 +1,38 @@
+# https://taskfile.dev
+version: '3'
+
+tasks:
+  files:
+    desc: Cleanup of almost all gitignored files and untracked files
+    prompt: This could potentially delete untracked files!! Do you want to continue?
+    summary: |
+      Cleanup of almost all gitignored files and untracked files
+
+      The following files/dirs are excluded:
+        - /.idea
+    cmds:
+      - git clean
+        -xd
+        --force
+        --exclude .idea
+
+  volumes:
+    desc: Cleanup docker compose named volumes
+    cmds:
+      - task: :down
+      - for: { var: DOCKER_CACHE_VOLUMES }
+        cmd: docker volume rm {{`{{.ITEM}}`}} || true
+      # Old cache volumes to clean up (replaced by _cache):
+      - for: { var: DOCKER_OLD_CACHE_VOLUMES }
+        cmd: docker volume rm {{`{{.ITEM}}`}} || true
+
+  all:
+    desc: Cleanup of almost all gitignored files, untracked files and dev containers
+    summary: |
+      Cleanup of almost all gitignored files, untracked files and development containers.
+
+      The following files/dirs are excluded:
+        - /.idea
+    cmds:
+      - task: volumes
+      - task: files

@@ -1,0 +1,65 @@
+# https://taskfile.dev
+version: '3'
+
+tasks:
+  if-not-exist:
+    desc: Setup development environment only if it wasn't already setup before
+    internal: true
+    vars:
+      PROJECT_EXISTS:
+        sh: 'docker compose ps --all --services'
+    status:
+      - test ! -z "{{`{{.PROJECT_EXISTS}}`}}"
+    cmds:
+      - task: do
+
+  do:
+    desc: Setup development environment
+    internal: true
+    cmds:
+      - task: create:volumes
+      - task: :dc:build
+      - task: env-file:local
+      - task: env-file:testing
+      - task: :composer:install
+      - task: :npm:install
+      - task: :dc
+        vars: { SUB_CMD: 'up -d' }
+      - task: :artisan:run:key:generate
+      - task: :artisan:run:storage:link
+        vars: { SUB_CMD: '--quiet' }
+      - task: :dc:run:php
+        vars: { SUB_CMD: 'bash -c "wait-for-it mariadb:3306 --timeout=0 --strict -- echo \"Done waiting\""' }
+      - task: :db:migrate-fresh:local
+      - task: :db:migrate-fresh:testing
+      - task: :npm:run:build
+
+  create:volumes:
+    cmds:
+      - for: { var: DOCKER_CACHE_VOLUMES }
+        cmd: docker volume create {{`{{.ITEM}}`}}
+
+  env-file:local:
+    desc: Template .env
+    run: once
+    cmds:
+      - cp .env.example .env
+      - cmd: |
+          if [ "{{`{{.ORBSTACK_ENABLED }}`}}" = "1" ]; then
+            sed -i '' 's#^\(APP_URL=\).*#\1{{`{{.ORB_APP_HOST}}`}}#' .env
+          fi
+        platforms: [darwin]
+    sources:
+      - .env.example
+    generates:
+      - .env
+
+  env-file:testing:
+    desc: Template .env.testing
+    run: once
+    cmds:
+      - cp .env.testing.example .env.testing
+    sources:
+      - .env.testing.example
+    generates:
+      - .env.testing

@@ -1,0 +1,46 @@
+# https://taskfile.dev
+version: '3'
+
+tasks:
+  do:*:
+    desc: Run a composer command inside the php service
+    vars:
+      COMPOSER_CMD: '{{`{{index .MATCH 0}}`}}'
+    cmds:
+      - task: :dc:run:php
+        vars:
+          SUB_CMD: 'composer {{`{{.COMPOSER_CMD}}`}} {{`{{.SUB_CMD}}`}}'
+          CLI_ARGS: '{{`{{.CLI_ARGS}}`}}'
+
+  install:
+    desc: Install composer dependencies
+    cmds:
+      - task: do:install
+
+  update:
+    desc: Update composer dependencies (including all dependencies)
+    cmds:
+      - task: do:update
+        vars:
+          SUB_CMD: '--with-all-dependencies'
+
+  update-lockfile:
+    desc: Update composer lock file
+    cmds:
+      - task: do:update
+        vars:
+          SUB_CMD: '--lock'
+
+  validate:
+    desc: Validate composer.json
+    cmds:
+      - task: do:validate
+
+  run:*:
+    desc: Run a composer script
+    vars:
+      SCRIPT: '{{`{{index .MATCH 0}}`}}'
+    cmds:
+      - task: do:run
+        vars:
+          SUB_CMD: '{{`{{.SCRIPT}}`}}'

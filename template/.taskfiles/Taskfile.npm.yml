@@ -1,0 +1,40 @@
+# https://taskfile.dev
+version: '3'
+
+tasks:
+  do:*:
+    desc: Run a NPM command inside the php service
+    vars:
+      NPM_CMD: '{{`{{index .MATCH 0}}`}}'
+    cmds:
+      - task: :dc:run:php
+        vars:
+          SUB_CMD: 'npm {{`{{.NPM_CMD}}`}} {{`{{.SUB_CMD}}`}}'
+          CLI_ARGS: '{{`{{.CLI_ARGS}}`}}'
+
+  install:
+    desc: Install node dependencies
+    cmds:
+      - task: do:ci
+
+  update:
+    desc: Update node dependencies
+    cmds:
+      - task: do:update
+
+  run:*:
+    desc: Run a NPM script
+    vars:
+      SCRIPT: '{{`{{index .MATCH 0}}`}}'
+    cmds:
+      - task: do:run
+        vars: { SUB_CMD: '{{`{{.SCRIPT}}`}}' }
+
+  corepack:update:
+    aliases: [corepack:up]
+    desc: Run corepack up
+    cmds:
+      - task: :dc:run:php
+        vars:
+          SUB_CMD: 'corepack up'
+          CLI_ARGS: '{{`{{.CLI_ARGS}}`}}'

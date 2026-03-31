@@ -8,7 +8,7 @@
     {{- $dockerTag = "0.4.1" }}
 {{- end -}}
 
-FROM ghcr.io/ilyes512/php{{ PhpVersion | replace "."  "" }}:builder_nodejs-{{$dockerTag}} AS builder
+FROM ghcr.io/specsnl/php{{ PhpVersion | replace "."  "" }}:builder_nodejs-{{$dockerTag}} AS builder
 
 COPY --link ./composer.json ./composer.lock /var/www/
 

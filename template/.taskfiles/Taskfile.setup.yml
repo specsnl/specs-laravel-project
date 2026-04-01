@@ -17,8 +17,9 @@ tasks:
     desc: Setup development environment
     internal: true
     cmds:
-      - task: create:volumes
+      - task: auth
       - task: :dc:build
+        if: '[ "${GITHUB_ACTIONS:-}" != "true" ]'
       - task: env-file:local
       - task: env-file:testing
       - task: :composer:install
@@ -35,6 +36,7 @@ tasks:
       - task: :npm:run:build
 
   create:volumes:
+    desc: Create the named volumes
     cmds:
       - for: { var: DOCKER_CACHE_VOLUMES }
         cmd: docker volume create {{`{{.ITEM}}`}}
@@ -63,3 +65,15 @@ tasks:
       - .env.testing.example
     generates:
       - .env.testing
+
+  auth:
+    desc: Configure Filament Blueprint authentication by creating an local auth.json file.
+    status:
+      - test -f auth.json
+    cmds:
+      - task: auth:do
+
+  auth:do:
+    internal: true
+    cmds:
+      - echo '{}' > auth.json

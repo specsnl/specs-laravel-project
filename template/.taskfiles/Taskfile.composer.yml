@@ -14,22 +14,21 @@ tasks:
 
   install:
     desc: Install composer dependencies
+    preconditions:
+      - sh: test -f auth.json
+        msg: 'Missing auth.json file. Please run task setup:auth!'
     cmds:
       - task: do:install
 
   update:
-    desc: Update composer dependencies (including all dependencies)
+    desc: Install composer dependencies (including all dependencies)
+    preconditions:
+      - sh: test -f auth.json
+        msg: 'Missing auth.json file. Please run task setup:auth!'
     cmds:
       - task: do:update
         vars:
           SUB_CMD: '--with-all-dependencies'
-
-  update-lockfile:
-    desc: Update composer lock file
-    cmds:
-      - task: do:update
-        vars:
-          SUB_CMD: '--lock'
 
   validate:
     desc: Validate composer.json

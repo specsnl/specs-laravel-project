@@ -12,6 +12,8 @@ inputs:
     description: Set PHP extensions
   github-token:
     description: Add a Github Token which will be used for Composer auth
+  composer-auth-json:
+    description: JSON string for Composer auth
 
 runs:
   using: composite
@@ -38,6 +40,8 @@ runs:
         coverage: {{`${{ inputs.coverage }}`}}
         extensions: {{`${{ inputs.extensions }}`}}
         github-token: {{`${{ inputs.github-token }}`}}
+      env:
+        COMPOSER_AUTH_JSON: {{`${{ inputs.composer-auth-json }}`}}
 
     - name: Install dependencies
       shell: bash

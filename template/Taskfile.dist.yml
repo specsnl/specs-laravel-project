@@ -34,6 +34,7 @@ tasks:
       FIXGID:
         sh: echo ${FIXGID:-$(id -g)}
     cmds:
+      - task: setup:create:volumes
       - >-
         FIXUID={{`{{.FIXUID}}`}} FIXGID={{`{{.FIXGID}}`}}
         docker compose
@@ -57,9 +58,12 @@ tasks:
   dc:build:
     desc: Build all docker images
     deps: [setup:env-file:local]
+    preconditions:
+      - sh: test -f auth.json
+        msg: Create an auth.json file by running "task setup:auth".
     cmds:
       - task: dc
-        vars: { SUB_CMD: 'build --build-arg USER_UID=$(id -u)' }
+        vars: { SUB_CMD: 'build --build-arg USER_UID=$(id -u) --build-arg USER_GID=$(id -g)' }
 
   up:
     desc: Start development environment

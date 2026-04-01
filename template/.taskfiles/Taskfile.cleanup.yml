@@ -24,9 +24,6 @@ tasks:
       - task: :down
       - for: { var: DOCKER_CACHE_VOLUMES }
         cmd: docker volume rm {{`{{.ITEM}}`}} || true
-      # Old cache volumes to clean up (replaced by _cache):
-      - for: { var: DOCKER_OLD_CACHE_VOLUMES }
-        cmd: docker volume rm {{`{{.ITEM}}`}} || true
 
   all:
     desc: Cleanup of almost all gitignored files, untracked files and dev containers

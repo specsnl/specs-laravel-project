@@ -8,8 +8,6 @@ vars:
     sh: test "$(docker context show)" = "orbstack" && echo 1 || echo 0
   ORB_APP_HOST: https://{{kebabcase ProjectShortName}}.local
   DOCKER_CACHE_VOLUMES: [ {{snakecase ProjectShortName}}_cache ]
-  # Old cache volumes to clean up (replaced by _cache):
-  DOCKER_OLD_CACHE_VOLUMES: [ {{snakecase ProjectShortName}}_composer, {{snakecase ProjectShortName}}_npm ]
 
 # env:
 #   BUILDKIT_PROGRESS: plain

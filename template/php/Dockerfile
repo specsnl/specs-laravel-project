@@ -1,11 +1,11 @@
 {{$dockerTag := "" }}
 
 {{- if eq PhpVersion "8.4"}}
-    {{- $dockerTag = "1.4.0" }}
+    {{- $dockerTag = "1.5.0" }}
 {{- else if eq PhpVersion "8.3"}}
-    {{- $dockerTag = "1.7.0" }}
+    {{- $dockerTag = "1.8.0" }}
 {{- else}}
-    {{- $dockerTag = "0.4.1" }}
+    {{- $dockerTag = "0.5.0" }}
 {{- end -}}
 
 # syntax=docker/dockerfile:1
@@ -35,70 +35,9 @@ RUN --mount=type=cache,target=/cache \
 
 RUN npm run build
 
-RUN rm -rf package.json package-lock.json vite.config.js resources node_modules
-
-FROM ghcr.io/specsnl/php{{ PhpVersion | replace "."  "" }}:builder-{{$dockerTag}} AS builder-files-cache
-
-ARG COMPOSER_AUTH
-ARG TARGETARCH
-
-COPY --link ./ /var/www
-COPY --link --from=deps /var/www /var/www/
-
-RUN chown -R www-data: /var/www/storage /var/www/bootstrap/cache
-RUN --mount=type=cache,target=/cache \
-    --mount=type=secret,id=composer_auth,env=COMPOSER_AUTH \
-    composer install --no-progress --prefer-dist
-
-ENV FIXUID_VERSION=0.6.0
-
-RUN curl -fsSLo /tmp/fixuid.tar.gz "https://github.com/boxboat/fixuid/releases/download/v$FIXUID_VERSION/fixuid-${FIXUID_VERSION}-linux-${TARGETARCH}.tar.gz" \
-    && tar -xf /tmp/fixuid.tar.gz -C /usr/local/bin fixuid \
-    && chown root:root /usr/local/bin/fixuid \
-    && chmod 4755 /usr/local/bin/fixuid
-
-FROM ghcr.io/specsnl/php{{ PhpVersion | replace "."  "" }}:builder_nodejs-{{$dockerTag}} AS builder
-
-ARG USER=code
-ARG GROUP=code
-ARG USER_UID=1000
-ARG USER_GID=1000
+FROM ghcr.io/specsnl/php{{ PhpVersion | replace "."  "" }}:builder_nodejs-{{$dockerTag}} AS builder-base
 
 ENV PATH="$PATH:/var/www/vendor/bin"
-
-RUN existing_group=$(getent group "$USER_GID" | cut -d: -f1) \
-    && if [ -z "$existing_group" ]; then \
-           groupadd --gid "$USER_GID" "$GROUP"; \
-           existing_group="$GROUP"; \
-       fi \
-    && useradd --uid "$USER_UID" --gid "$USER_GID" --create-home "$USER" --shell /bin/bash \
-    && mkdir -p \
-        /etc/fixuid \
-        "/data" \
-        "/config" \
-        "/cache" \
-    && chown -R "$USER_UID":"$USER_GID" \
-        "/data" \
-        "/config" \
-        "/cache" \
-    && cat <<EOF > /etc/fixuid/config.yml
-user: $USER
-group: $existing_group
-paths:
-  - /var/www
-  - /home/$USER
-  - /data
-  - /config
-  - /cache
-
-EOF
-
-COPY --link --from=builder-files-cache /var/www /var/www
-COPY --link ./php/files/ /
-COPY --link --from=builder-files-cache /usr/local/bin/fixuid /usr/local/bin/fixuid
-
-ENV PHP_APP_ENV=local
-ENV PHP_COMPOSER_INSTALL_DEV=true
 
 RUN apt-get update \
     && apt-get install --assume-yes --no-install-recommends \
@@ -108,42 +47,75 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /tmp/*
 
-USER code
+COPY --link ./php/files/ /
 
 ENV COREPACK_DEFAULT_TO_LATEST=0
+ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 
-RUN corepack install \
+COPY --link ./package.json /var/www/
+
+RUN --mount=type=cache,target=/cache \
+corepack install \
     && corepack enable
-
-USER root
 
 ENTRYPOINT ["fixuid", "-q"]
 CMD ["docker-cmd.sh"]
 
-FROM builder AS runtime-files-cache
+FROM builder-base AS builder
+
+COPY --link --from=deps /var/www /var/www/
+
+FROM builder-base AS builder-local
+
+FROM ghcr.io/specsnl/php{{PhpVersion | replace "."  ""}}:builder-{{$dockerTag}} AS prod-precompile
 
 ARG COMPOSER_AUTH
 
+COPY --link --from=deps /var/www /var/www/
+
 RUN --mount=type=cache,target=/cache \
     --mount=type=secret,id=composer_auth,env=COMPOSER_AUTH \
-    composer install --classmap-authoritative --no-dev --no-progress --prefer-dist
+    composer install \
+        --no-dev \
+        --classmap-authoritative \
+        --optimize-autoloader \
+        --no-progress \
+        --prefer-dist
 
-RUN rm -rf \
-    package.json \
-    package-lock.json \
-    vite.config.js \
-    phpunit.xml* \
-    tests \
-    .dockerignore \
-    nginx \
-    php
+# A placeholder APP_KEY is required to boot the application for cache
+# generation. It is a dummy value — the real key is injected at runtime via
+# environment variables or a secret manager.
+# 43 A's + '=' decodes to exactly 32 bytes, satisfying AES-256-CBC requirements.
+ENV APP_KEY=base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+ENV APP_ENV=production
 
-FROM ghcr.io/specsnl/php{{ PhpVersion | replace "."  "" }}:runtime-{{$dockerTag}} AS runtime
+RUN php artisan package:discover --ansi \
+    && php artisan route:cache \
+    && php artisan event:cache \
+    && php artisan view:cache
 
-COPY --link --from=runtime-files-cache /var/www /var/www
+RUN chown -R www-data: /var/www/storage /var/www/bootstrap/cache
 
-ENV PHP_APP_ENV=local
-ENV PHP_COMPOSER_INSTALL_DEV=false
+FROM ghcr.io/ilyes512/php85{{PhpVersion | replace "."  ""}}:runtime-{{$dockerTag}} AS runtime
 
-ENTRYPOINT ["docker-php-entrypoint"]
+COPY --link app/ /var/www/app/
+COPY --link config/ /var/www/config/
+COPY --link database/migrations/ /var/www/database/migrations/
+COPY --link routes/ /var/www/routes/
+COPY --link resources/views/ /var/www/resources/views/
+COPY --link storage/ /var/www/storage/
+COPY --link artisan /var/www/artisan
+COPY --link bootstrap/app.php bootstrap/providers.php /var/www/bootstrap/
+
+COPY --link --from=deps /var/www/public /var/www/public/
+
+COPY --from=prod-precompile /var/www/vendor /var/www/vendor/
+COPY --from=prod-precompile /var/www/bootstrap/cache /var/www/bootstrap/cache/
+COPY --from=prod-precompile /var/www/storage/framework /var/www/storage/framework/
+
+COPY --link ./php/files/ /
+
+RUN chown -R www-data: /var/www/storage /var/www/bootstrap/cache
+
+ENTRYPOINT ["docker-php-entrypoint", "runtime-entrypoint.sh"]
 CMD ["docker-cmd.sh"]

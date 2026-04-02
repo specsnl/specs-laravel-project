@@ -1,14 +1,30 @@
+{{$dockerTag := "" }}
+
+{{- if eq PhpVersion "8.4"}}
+    {{- $dockerTag = "1.5.0" }}
+{{- else if eq PhpVersion "8.3"}}
+    {{- $dockerTag = "1.8.0" }}
+{{- else}}
+    {{- $dockerTag = "0.5.0" }}
+{{- end -}}
+
 secrets:
   composer_auth:
     file: ${COMPOSER_AUTH_FILE:-./auth.json}
 
 services:
+  php-exec:
+    user: ${FIXUID:-1000}:${FIXGID:-1000}
+    entrypoint: ["fixuid", "-q"]
+    image: ghcr.io/specsnl/php{{ PhpVersion | replace "."  "" }}:builder_nodejs-{{ $dockerTag }}
+    profiles: [exec]
+
   php:
     user: ${FIXUID:-1000}:${FIXGID:-1000}
     build:
       context: .
       dockerfile: php/Dockerfile
-      target: builder
+      target: builder-local
       secrets:
         - composer_auth
     secrets:
@@ -19,7 +35,7 @@ services:
     build:
       context: .
       dockerfile: php/Dockerfile
-      target: builder
+      target: builder-local
       secrets:
         - composer_auth
     restart: unless-stopped

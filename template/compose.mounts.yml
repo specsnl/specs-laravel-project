@@ -4,6 +4,12 @@ volumes:
   mariadb_data:
 
 services:
+  php-exec:
+    volumes:
+      - ./:/var/www/
+      - {{snakecase ProjectShortName}}_cache:/cache
+      - ./auth.json:/config/composer/auth.json:ro
+
   php:
     volumes:
       - ./:/var/www/

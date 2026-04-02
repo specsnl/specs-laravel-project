@@ -18,6 +18,8 @@ tasks:
     internal: true
     cmds:
       - task: auth
+      - task: init:composer-lock
+      - task: init:npm-lock
       - task: :dc:build
         if: '[ "${GITHUB_ACTIONS:-}" != "true" ]'
       - task: env-file:local
@@ -47,6 +49,22 @@ tasks:
         cmd: |
           docker volume create {{`{{.ITEM}}`}} > /dev/null
           docker run --rm --volume "{{`{{.ITEM}}`}}:/vol" busybox:1.37.0-musl chown -R {{`{{.FIXUID}}`}}:{{`{{.FIXGID}}`}} /vol
+
+  init:composer-lock:
+    desc: Run composer update if composer.lock does not exist yet
+    internal: true
+    status:
+      - test -f composer.lock
+    cmds:
+      - task: :composer:update
+
+  init:npm-lock:
+    desc: Run npm update if package-lock.json does not exist yet
+    internal: true
+    status:
+      - test -f package-lock.json
+    cmds:
+      - task: :npm:update
 
   env-file:local:
     desc: Template .env

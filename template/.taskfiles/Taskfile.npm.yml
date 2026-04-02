@@ -19,8 +19,13 @@ tasks:
 
   update:
     desc: Update node dependencies
+    preconditions:
+      - sh: test -f auth.json
+        msg: 'Missing auth.json file. Please run task setup:auth!'
     cmds:
-      - task: do:update
+      - task: :dc:run:php-exec
+        vars:
+          SUB_CMD: 'npm update'
 
   run:*:
     desc: Run a NPM script

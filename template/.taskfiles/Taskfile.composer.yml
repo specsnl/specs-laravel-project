@@ -26,9 +26,9 @@ tasks:
       - sh: test -f auth.json
         msg: 'Missing auth.json file. Please run task setup:auth!'
     cmds:
-      - task: do:update
+      - task: :dc:run:php-exec
         vars:
-          SUB_CMD: '--with-all-dependencies'
+          SUB_CMD: 'composer update --with-all-dependencies'
 
   validate:
     desc: Validate composer.json

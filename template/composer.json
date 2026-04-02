@@ -71,17 +71,17 @@
         ],
         "test": [
             "Composer\\Config::disableProcessTimeout",
-            "XDEBUG_MODE=off phpunit -d --without-creating-snapshots"
+            "XDEBUG_MODE=off REATE_SNAPSHOTS=false phpunit"
         ],
         "test-report": [
             "Composer\\Config::disableProcessTimeout",
-            "XDEBUG_MODE=off php -dpcov.enabled=1 -dpcov.directory=. vendor/bin/phpunit -d --without-creating-snapshots --coverage-text --show-uncovered-for-coverage-text --coverage-html coverage/html"
+            "XDEBUG_MODE=off CREATE_SNAPSHOTS=false php -dpcov.enabled=1 -dpcov.directory=. vendor/bin/phpunit --coverage-text --show-uncovered-for-coverage-text --coverage-html coverage/html"
         ],
         "checkstyle": "XDEBUG_MODE=off phpcs -n",
         "fixstyle": "XDEBUG_MODE=off phpcbf -n",
         "checktype": "XDEBUG_MODE=off phpstan analyse --memory-limit=-1 -v",
         "update-type-baseline": "XDEBUG_MODE=off phpstan --generate-baseline",
-        "update-test-snapshots": "XDEBUG_MODE=off vendor/bin/phpunit -d --update-snapshots"
+        "update-test-snapshots": "XDEBUG_MODE=off UPDATE_SNAPSHOTS=true phpunit"
     },
     "extra": {
         "laravel": {

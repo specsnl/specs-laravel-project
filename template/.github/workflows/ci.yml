@@ -104,7 +104,9 @@ jobs:
       - name: Run migrations
         run: php artisan --env=testing migrate:fresh --seed
       - name: Back-end Unit tests using PHPUnit
-        run: php -dpcov.enabled=1 -dpcov.directory=. vendor/bin/phpunit -d --without-creating-snapshots --log-junit=reports/phpunit/phpunit-report.xml --coverage-clover=reports/phpunit/phpunit-coverage.xml
+        run: php -dpcov.enabled=1 -dpcov.directory=. vendor/bin/phpunit --log-junit=reports/phpunit/phpunit-report.xml --coverage-clover=reports/phpunit/phpunit-coverage.xml
+        env:
+          CREATE_SNAPSHOTS: false
       - name: Upload PHPUnit coverage report
         uses: actions/upload-artifact@v6
         with:

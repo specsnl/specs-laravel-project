@@ -18,6 +18,9 @@ services:
     entrypoint: ["fixuid", "-q"]
     image: ghcr.io/specsnl/php{{ PhpVersion | replace "."  "" }}:builder_nodejs-{{ $dockerTag }}
     profiles: [exec]
+    environment:
+      COREPACK_DEFAULT_TO_LATEST: 0
+      COREPACK_ENABLE_DOWNLOAD_PROMPT: 0
 
   php:
     user: ${FIXUID:-1000}:${FIXGID:-1000}

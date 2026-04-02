@@ -36,10 +36,17 @@ tasks:
       - task: :npm:run:build
 
   create:volumes:
-    desc: Create the named volumes
+    desc: Create the named volumes and initialize their ownership
+    vars:
+      FIXUID:
+        sh: echo ${FIXUID:-$(id -u)}
+      FIXGID:
+        sh: echo ${FIXGID:-$(id -g)}
     cmds:
       - for: { var: DOCKER_CACHE_VOLUMES }
-        cmd: docker volume create {{`{{.ITEM}}`}}
+        cmd: |
+          docker volume create {{`{{.ITEM}}`}} > /dev/null
+          docker run --rm --volume "{{`{{.ITEM}}`}}:/vol" busybox:1.37.0-musl chown -R {{`{{.FIXUID}}`}}:{{`{{.FIXGID}}`}} /vol
 
   env-file:local:
     desc: Template .env

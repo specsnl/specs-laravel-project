@@ -108,7 +108,7 @@ jobs:
         env:
           CREATE_SNAPSHOTS: false
       - name: Upload PHPUnit coverage report
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: phpunit-report
           path: reports/phpunit
@@ -162,7 +162,7 @@ jobs:
           vendor/bin/phpstan analyse --memory-limit=-1 --error-format=json > reports/phpstan/phpstan-report.json
       - name: Upload PHPStan analysis report
         if: steps.phpstan-report.outcome == 'success'
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: phpstan-report
           path: reports/phpstan

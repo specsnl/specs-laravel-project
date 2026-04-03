@@ -60,9 +60,12 @@
             "[ \"$COMPOSER_DEV_MODE\" = \"1\" ] && $PHP_BINARY artisan ide-helper:generate || true",
             "[ \"$COMPOSER_DEV_MODE\" = \"1\" ] && $PHP_BINARY artisan ide-helper:meta || true"
         ],
+        "post-install-cmd": [
+            "[ \"$COMPOSER_DEV_MODE\" = \"1\" ] && $PHP_BINARY artisan boost:update --ansi || true"
+        ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force",
-            "@php artisan boost:update --ansi --discover"
+            "[ \"$COMPOSER_DEV_MODE\" = \"1\" ] && $PHP_BINARY artisan boost:update --ansi --discover || true"
         ],
         "pre-package-uninstall": "Illuminate\\Foundation\\ComposerScripts::prePackageUninstall",
         "checkall": [

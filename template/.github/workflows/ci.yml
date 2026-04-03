@@ -74,7 +74,7 @@ jobs:
     needs: [setup-npm-cache, setup-composer-cache]
     services:
       mariadb:
-        image: mariadb:11.8.3-noble
+        image: mariadb:11.8.6-noble
         env:
           MARIADB_DATABASE: "{{snakecase ProjectShortName}}_test"
           MARIADB_USER: "{{snakecase ProjectShortName}}_test"
@@ -173,7 +173,7 @@ jobs:
     needs: [setup-composer-cache]
     services:
       mariadb:
-        image: mariadb:11.8.3-noble
+        image: mariadb:11.8.6-noble
         env:
           MARIADB_DATABASE: "{{snakecase ProjectShortName}}_test"
           MARIADB_USER: "{{snakecase ProjectShortName}}_test"

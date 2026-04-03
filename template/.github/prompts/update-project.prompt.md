@@ -87,7 +87,7 @@ Abort on any failure.
     - `nginx/Dockerfile`
     - `.github/workflows/*.yml` (e.g. service images like `mysql:`)
 2. For each image found, check for a newer version:
-    - For images hosted on `ghcr.io/ilyes512/*`: use the GitHub Releases API to find the latest release tag for that
+    - For images hosted on `ghcr.io/*`: use the GitHub Releases API to find the latest release tag for that
     repository.
     - For Docker Hub images (`mysql`, `redis`, `axllent/mailpit`, etc.): check Docker Hub for the latest stable tag
     matching the current flavour (e.g. `8.0-bookworm`, `7-bookworm`).

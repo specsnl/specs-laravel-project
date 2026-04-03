@@ -27,6 +27,7 @@
         "fakerphp/faker": "^1.23",
         "itsgoingd/clockwork": "^5.3",
         "larastan/larastan": "^3.0",
+        "laravel/boost": "^2.4",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.6",
         "phpstan/extension-installer": "^1.4",
@@ -60,7 +61,8 @@
             "[ \"$COMPOSER_DEV_MODE\" = \"1\" ] && $PHP_BINARY artisan ide-helper:meta || true"
         ],
         "post-update-cmd": [
-            "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
+            "@php artisan vendor:publish --tag=laravel-assets --ansi --force",
+            "@php artisan boost:update --ansi --discover"
         ],
         "pre-package-uninstall": "Illuminate\\Foundation\\ComposerScripts::prePackageUninstall",
         "checkall": [

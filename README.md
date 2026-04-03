@@ -1,4 +1,4 @@
-# Ilyes512/boilr-laravel-project
+# specsnl/boilr-laravel-project
 
 A [Boilr](https://github.com/Ilyes512/boilr) template for PHP Laravel 12 projects.
 

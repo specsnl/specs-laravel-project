@@ -10,7 +10,6 @@
 /.idea
 /.nova
 /.phpunit.cache
-/.vscode
 /.zed
 /auth.json
 /node_modules
@@ -41,3 +40,7 @@ public/js
 _ide_helper_models.php
 _ide_helper.php
 .phpstorm.meta.php
+
+# Agents
+CLAUDE.md
+AGENTS.md

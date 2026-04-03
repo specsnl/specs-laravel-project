@@ -18,17 +18,16 @@
         "php": "^8.5",
         {{- end}}
         "laravel/framework": "^12.0",
-        "laravel/tinker": "^2.10.1",
+        "laravel/tinker": "^3.0.0",
         "webmozart/assert": "^2.0.0"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^3.5",
         "dg/bypass-finals": "^1.9",
         "fakerphp/faker": "^1.23",
-        "ilyes512/code-style": "^4.0.0",
-        "ilyes512/laravel-dump-server": "^1.10",
         "itsgoingd/clockwork": "^5.3",
-        "larastan/larastan": "^3",
+        "larastan/larastan": "^3.0",
+        "laravel/boost": "^2.4",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.6",
         "phpstan/extension-installer": "^1.4",
@@ -36,9 +35,11 @@
         "phpstan/phpstan-mockery": "^2.0",
         "phpstan/phpstan-strict-rules": "^2.0",
         "phpstan/phpstan-webmozart-assert": "^2.0",
-        "phpunit/phpunit": "^12.2.2",
+        "phpunit/phpunit": "^13.0",
         "shipmonk/phpstan-rules": "^4.0",
-        "spatie/phpunit-snapshot-assertions": "^5.1"
+        "spatie/phpunit-snapshot-assertions": "^5.1",
+        "specsnl/code-style": "^5.0.1",
+        "specsnl/laravel-dump-server": "^2.0"
     },
     "autoload": {
         "psr-4": {
@@ -59,8 +60,12 @@
             "[ \"$COMPOSER_DEV_MODE\" = \"1\" ] && $PHP_BINARY artisan ide-helper:generate || true",
             "[ \"$COMPOSER_DEV_MODE\" = \"1\" ] && $PHP_BINARY artisan ide-helper:meta || true"
         ],
+        "post-install-cmd": [
+            "[ \"$COMPOSER_DEV_MODE\" = \"1\" ] && $PHP_BINARY artisan boost:update --ansi || true"
+        ],
         "post-update-cmd": [
-            "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
+            "@php artisan vendor:publish --tag=laravel-assets --ansi --force",
+            "[ \"$COMPOSER_DEV_MODE\" = \"1\" ] && $PHP_BINARY artisan boost:update --ansi --discover || true"
         ],
         "pre-package-uninstall": "Illuminate\\Foundation\\ComposerScripts::prePackageUninstall",
         "checkall": [
@@ -71,17 +76,17 @@
         ],
         "test": [
             "Composer\\Config::disableProcessTimeout",
-            "XDEBUG_MODE=off phpunit -d --without-creating-snapshots"
+            "XDEBUG_MODE=off REATE_SNAPSHOTS=false phpunit"
         ],
         "test-report": [
             "Composer\\Config::disableProcessTimeout",
-            "XDEBUG_MODE=off php -dpcov.enabled=1 -dpcov.directory=. vendor/bin/phpunit -d --without-creating-snapshots --coverage-text --show-uncovered-for-coverage-text --coverage-html coverage/html"
+            "XDEBUG_MODE=off CREATE_SNAPSHOTS=false php -dpcov.enabled=1 -dpcov.directory=. vendor/bin/phpunit --coverage-text --show-uncovered-for-coverage-text --coverage-html coverage/html"
         ],
         "checkstyle": "XDEBUG_MODE=off phpcs -n",
         "fixstyle": "XDEBUG_MODE=off phpcbf -n",
         "checktype": "XDEBUG_MODE=off phpstan analyse --memory-limit=-1 -v",
         "update-type-baseline": "XDEBUG_MODE=off phpstan --generate-baseline",
-        "update-test-snapshots": "XDEBUG_MODE=off vendor/bin/phpunit -d --update-snapshots"
+        "update-test-snapshots": "XDEBUG_MODE=off UPDATE_SNAPSHOTS=true phpunit"
     },
     "extra": {
         "laravel": {
@@ -98,7 +103,7 @@
             "phpstan/extension-installer": true
         }
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "prefer-stable": true,
     "scripts-descriptions": {
         "checkall": "Run all checks including tests",

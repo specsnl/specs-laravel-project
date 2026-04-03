@@ -1,0 +1,14 @@
+# https://taskfile.dev
+version: '3'
+
+tasks:
+  run:*:
+    desc: Run an artisan command inside the php service
+    interactive: true
+    vars:
+      ARTISAN_CMD: '{{`{{index .MATCH 0}}`}}'
+    cmds:
+      - task: :dc:run:php
+        vars:
+          SUB_CMD: 'php artisan {{`{{.ARTISAN_CMD}}`}} {{`{{.SUB_CMD}}`}}'
+          CLI_ARGS: '{{`{{.CLI_ARGS}}`}}'

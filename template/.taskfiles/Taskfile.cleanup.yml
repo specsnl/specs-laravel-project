@@ -1,0 +1,50 @@
+# https://taskfile.dev
+version: '3'
+
+tasks:
+  files:
+    desc: Cleanup of almost all gitignored files and untracked files
+    prompt: This could potentially delete untracked files!! Do you want to continue?
+    summary: |
+      Cleanup of almost all gitignored files and untracked files
+
+      The following files/dirs are excluded:
+        - /.idea
+        - /auth.json
+    cmds:
+      - git clean
+        -xd
+        --force
+        --exclude .idea
+        --exclude /auth.json
+
+  volumes:
+    desc: Cleanup docker compose named volumes
+    cmds:
+      - task: :down
+      - for: { var: DOCKER_CACHE_VOLUMES }
+        cmd: docker volume rm {{`{{.ITEM}}`}} > /dev/null || true
+
+  all:
+    desc: Cleanup of almost all gitignored files, untracked files and dev containers
+    summary: |
+      Cleanup of almost all gitignored files, untracked files and development containers.
+
+      The following files/dirs are excluded:
+        - /.idea
+        - /auth.json
+    cmds:
+      - task: volumes
+      - task: files
+
+  auth:
+    desc: Delete the local auth.json file.
+    status:
+      - test ! -f auth.json
+      - test ! -d auth.json
+    prompt: Removing auth.json
+    cmds:
+      - if: test -f auth.json
+        cmd: rm -f auth.json
+      - if: test -d auth.json
+        cmd: rmdir auth.json

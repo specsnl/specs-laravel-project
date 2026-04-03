@@ -1,0 +1,27 @@
+# https://taskfile.dev
+version: '3'
+
+tasks:
+  migrate:*:
+    desc: Run migrations
+    vars:
+      APP_ENV: '{{`{{index .MATCH 0}}`}}'
+    cmds:
+      - task: :artisan:run:migrate
+        vars: { SUB_CMD: '--env={{`{{.APP_ENV}}`}}' }
+    requires:
+      vars:
+        - name: APP_ENV
+          enum: ['local', 'testing']
+
+  migrate-fresh:*:
+    desc: Run fresh migrations with seeders
+    vars:
+      APP_ENV: '{{`{{index .MATCH 0}}`}}'
+    cmds:
+      - task: :artisan:run:migrate:fresh
+        vars: { SUB_CMD: '--env={{`{{.APP_ENV}}`}} --seed' }
+    requires:
+      vars:
+        - name: APP_ENV
+          enum: ['local', 'testing']

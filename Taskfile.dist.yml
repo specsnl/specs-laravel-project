@@ -41,7 +41,7 @@ tasks:
       - git -C "../{{.BOILR_TEMPLATE_TEST_NAME}}" init
       - git -C "../{{.BOILR_TEMPLATE_TEST_NAME}}" add .
       - git -C "../{{.BOILR_TEMPLATE_TEST_NAME}}" commit -m "Initial commit"
-      - git -C "../{{.BOILR_TEMPLATE_TEST_NAME}}" remote add origin git@github.com:Ilyes512/laravel-project-test.git
+      - git -C "../{{.BOILR_TEMPLATE_TEST_NAME}}" remote add origin git@github.com:specsnl/laravel-project-test.git
       - git -C "../{{.BOILR_TEMPLATE_TEST_NAME}}" fetch
       - git -C "../{{.BOILR_TEMPLATE_TEST_NAME}}" branch --set-upstream-to=origin/main main
       - code "../{{.BOILR_TEMPLATE_TEST_NAME}}"
@@ -56,7 +56,7 @@ tasks:
       - git -C "../{{.BOILR_TEMPLATE_TEST_NAME}}" init
       - git -C "../{{.BOILR_TEMPLATE_TEST_NAME}}" add .
       - git -C "../{{.BOILR_TEMPLATE_TEST_NAME}}" commit -m "Initial commit"
-      - git -C "../{{.BOILR_TEMPLATE_TEST_NAME}}" remote add origin git@github.com:Ilyes512/laravel-project-test.git
+      - git -C "../{{.BOILR_TEMPLATE_TEST_NAME}}" remote add origin git@github.com:specsnl/laravel-project-test.git
       - git -C "../{{.BOILR_TEMPLATE_TEST_NAME}}" fetch
       - git -C "../{{.BOILR_TEMPLATE_TEST_NAME}}" branch --set-upstream-to=origin/main main
       - code "../{{.BOILR_TEMPLATE_TEST_NAME}}"

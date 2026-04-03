@@ -1,22 +1,26 @@
 volumes:
-  {{snakecase ProjectShortName}}_composer:
-    external: true
-  {{snakecase ProjectShortName}}_npm:
+  {{snakecase ProjectShortName}}_cache:
     external: true
   mariadb_data:
 
 services:
+  php-exec:
+    volumes:
+      - ./:/var/www/
+      - {{snakecase ProjectShortName}}_cache:/cache
+      - ./auth.json:/config/composer/auth.json:ro
+
   php:
     volumes:
       - ./:/var/www/
-      - {{snakecase ProjectShortName}}_composer:/home/code/.composer
-      - {{snakecase ProjectShortName}}_npm:/home/code/.npm
+      - {{snakecase ProjectShortName}}_cache:/cache
+      - ./auth.json:/config/composer/auth.json:ro
 
   worker:
     volumes:
       - ./:/var/www/
-      - {{snakecase ProjectShortName}}_composer:/home/code/.composer
-      - {{snakecase ProjectShortName}}_npm:/home/code/.npm
+      - {{snakecase ProjectShortName}}_cache:/cache
+      - ./auth.json:/config/composer/auth.json:ro
 
   nginx:
     volumes:

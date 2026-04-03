@@ -1,17 +1,46 @@
+{{$dockerTag := "" }}
+
+{{- if eq PhpVersion "8.4"}}
+    {{- $dockerTag = "1.5.0" }}
+{{- else if eq PhpVersion "8.3"}}
+    {{- $dockerTag = "1.8.0" }}
+{{- else}}
+    {{- $dockerTag = "0.5.0" }}
+{{- end -}}
+
+secrets:
+  composer_auth:
+    file: ${COMPOSER_AUTH_FILE:-./auth.json}
+
 services:
+  php-exec:
+    user: ${FIXUID:-1000}:${FIXGID:-1000}
+    entrypoint: ["fixuid", "-q"]
+    image: ghcr.io/specsnl/php{{ PhpVersion | replace "."  "" }}:builder_nodejs-{{ $dockerTag }}
+    profiles: [exec]
+    environment:
+      COREPACK_DEFAULT_TO_LATEST: 0
+      COREPACK_ENABLE_DOWNLOAD_PROMPT: 0
+
   php:
     user: ${FIXUID:-1000}:${FIXGID:-1000}
     build:
       context: .
       dockerfile: php/Dockerfile
-      target: builder
+      target: builder-local
+      secrets:
+        - composer_auth
+    secrets:
+      - composer_auth
 
   worker:
     user: ${FIXUID:-1000}:${FIXGID:-1000}
     build:
       context: .
       dockerfile: php/Dockerfile
-      target: builder
+      target: builder-local
+      secrets:
+        - composer_auth
     restart: unless-stopped
     command:
       - bash
@@ -28,6 +57,8 @@ services:
     build:
       context: .
       dockerfile: nginx/Dockerfile
+      secrets:
+        - composer_auth
     depends_on:
       - php
     environment:
@@ -37,7 +68,7 @@ services:
       - dev.orbstack.http-port=80
 
   mariadb:
-    image: mariadb:11.8.3-noble
+    image: mariadb:11.8.6-noble
     environment:
       MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
       MARIADB_DATABASE: ${MARIADB_DATABASE}

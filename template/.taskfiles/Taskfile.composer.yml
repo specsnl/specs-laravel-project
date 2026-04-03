@@ -1,0 +1,45 @@
+# https://taskfile.dev
+version: '3'
+
+tasks:
+  do:*:
+    desc: Run a composer command inside the php service
+    vars:
+      COMPOSER_CMD: '{{`{{index .MATCH 0}}`}}'
+    cmds:
+      - task: :dc:run:php
+        vars:
+          SUB_CMD: 'composer {{`{{.COMPOSER_CMD}}`}} {{`{{.SUB_CMD}}`}}'
+          CLI_ARGS: '{{`{{.CLI_ARGS}}`}}'
+
+  install:
+    desc: Install composer dependencies
+    preconditions:
+      - sh: test -f auth.json
+        msg: 'Missing auth.json file. Please run task setup:auth!'
+    cmds:
+      - task: do:install
+
+  update:
+    desc: Install composer dependencies (including all dependencies)
+    preconditions:
+      - sh: test -f auth.json
+        msg: 'Missing auth.json file. Please run task setup:auth!'
+    cmds:
+      - task: :dc:run:php-exec
+        vars:
+          SUB_CMD: 'composer update --with-all-dependencies'
+
+  validate:
+    desc: Validate composer.json
+    cmds:
+      - task: do:validate
+
+  run:*:
+    desc: Run a composer script
+    vars:
+      SCRIPT: '{{`{{index .MATCH 0}}`}}'
+    cmds:
+      - task: do:run
+        vars:
+          SUB_CMD: '{{`{{.SCRIPT}}`}}'

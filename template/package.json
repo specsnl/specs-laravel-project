@@ -1,6 +1,6 @@
 {
     "$schema": "https://www.schemastore.org/package.json",
-    "name": "{{kebabcase ProjectName}}",
+    "name": "{{toKebabCase ProjectName}}",
     "private": true,
     "type": "module",
     "scripts": {

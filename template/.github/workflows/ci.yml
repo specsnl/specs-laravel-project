@@ -76,8 +76,8 @@ jobs:
       mariadb:
         image: mariadb:11.8.6-noble
         env:
-          MARIADB_DATABASE: "{{snakecase ProjectShortName}}_test"
-          MARIADB_USER: "{{snakecase ProjectShortName}}_test"
+          MARIADB_DATABASE: "{{toSnakeCase ProjectShortName}}_test"
+          MARIADB_USER: "{{toSnakeCase ProjectShortName}}_test"
           MARIADB_PASSWORD: password
           MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: "yes"
         ports:
@@ -175,8 +175,8 @@ jobs:
       mariadb:
         image: mariadb:11.8.6-noble
         env:
-          MARIADB_DATABASE: "{{snakecase ProjectShortName}}_test"
-          MARIADB_USER: "{{snakecase ProjectShortName}}_test"
+          MARIADB_DATABASE: "{{toSnakeCase ProjectShortName}}_test"
+          MARIADB_USER: "{{toSnakeCase ProjectShortName}}_test"
           MARIADB_PASSWORD: password
           MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: "yes"
         ports:

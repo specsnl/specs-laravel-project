@@ -6,7 +6,7 @@
     "keywords": [
         "laravel",
         "framework",
-        "{{kebabcase ProjectName}}"
+        "{{toKebabCase ProjectName}}"
     ],
     "license": "{{ComposerLicense}}",
     "require": {

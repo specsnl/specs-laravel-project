@@ -6,8 +6,8 @@ vars:
     sh: pwd
   ORBSTACK_ENABLED:
     sh: test "$(docker context show)" = "orbstack" && echo 1 || echo 0
-  ORB_APP_HOST: https://{{kebabcase ProjectShortName}}.local
-  DOCKER_CACHE_VOLUMES: [ {{snakecase ProjectShortName}}_cache ]
+  ORB_APP_HOST: https://{{toKebabCase ProjectShortName}}.local
+  DOCKER_CACHE_VOLUMES: [ {{toSnakeCase ProjectShortName}}_cache ]
 
 # env:
 #   BUILDKIT_PROGRESS: plain

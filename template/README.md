@@ -28,10 +28,10 @@ running.
 
 | Description       | Uri or host:port        | OrbStack domain            |
 |-------------------|-------------------------|----------------------------|
-| Application url   | <http://localhost:8080> | <https://{{kebabcase ProjectShortName}}.local>      |
-| Mailpit url       | <http://localhost:8025> | <https://mail.{{kebabcase ProjectShortName}}.local> |
-| MariaDB host port | `localhost:3306`        | `db.{{kebabcase ProjectShortName}}.local`          |
-| Redis host port   | `localhost:6379`        | `redis.{{kebabcase ProjectShortName}}.local`       |
+| Application url   | <http://localhost:8080> | <https://{{toKebabCase ProjectShortName}}.local>      |
+| Mailpit url       | <http://localhost:8025> | <https://mail.{{toKebabCase ProjectShortName}}.local> |
+| MariaDB host port | `localhost:3306`        | `db.{{toKebabCase ProjectShortName}}.local`          |
+| Redis host port   | `localhost:6379`        | `redis.{{toKebabCase ProjectShortName}}.local`       |
 
 > [!TIP]
 > If you are a macOS user and you are using OrbStack, you can navigate to <http://orb.local> to see the domains of all
@@ -58,4 +58,4 @@ instance (re)fetch the composer and npm dependencies, run the migrations and reb
 
 #### Using Clockwork to debug the application
 
-Checkout <https://{{kebabcase ProjectShortName}}.local/clockwork> to see the [clockwork](https://underground.works/clockwork/) dashboard.
+Checkout <https://{{toKebabCase ProjectShortName}}.local/clockwork> to see the [clockwork](https://underground.works/clockwork/) dashboard.

@@ -37,6 +37,8 @@ RUN npm run build
 
 FROM ghcr.io/specsnl/php{{ PhpVersion | replace "."  "" }}:builder_nodejs-{{$dockerTag}} AS builder-base
 
+ARG DEBIAN_FRONTEND=noninteractive
+
 ENV PATH="$PATH:/var/www/vendor/bin"
 
 RUN apt-get update \

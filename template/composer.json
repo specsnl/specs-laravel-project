@@ -76,7 +76,7 @@
         ],
         "test": [
             "Composer\\Config::disableProcessTimeout",
-            "XDEBUG_MODE=off REATE_SNAPSHOTS=false phpunit"
+            "XDEBUG_MODE=off CREATE_SNAPSHOTS=false phpunit"
         ],
         "test-report": [
             "Composer\\Config::disableProcessTimeout",
@@ -94,7 +94,6 @@
         }
     },
     "config": {
-        "optimize-autoloader": true,
         "preferred-install": "dist",
         "sort-packages": true,
         "allow-plugins": {

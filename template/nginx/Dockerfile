@@ -1,11 +1,11 @@
 {{$dockerTag := "" }}
 
 {{- if eq PhpVersion "8.4"}}
-    {{- $dockerTag = "1.5.0" }}
+    {{- $dockerTag = "1.5.1" }}
 {{- else if eq PhpVersion "8.3"}}
-    {{- $dockerTag = "1.8.0" }}
+    {{- $dockerTag = "1.8.1" }}
 {{- else}}
-    {{- $dockerTag = "0.5.0" }}
+    {{- $dockerTag = "0.5.1" }}
 {{- end -}}
 
 # syntax=docker/dockerfile:1
@@ -34,7 +34,7 @@ RUN --mount=type=cache,target=/cache \
 RUN npm run build
 
 # https://hub.docker.com/_/alpine
-FROM alpine:3.22.3 AS files
+FROM alpine:3.23.3 AS files
 
 COPY --link ./nginx/files /files/
 COPY --link --from=deps /var/www/public/ /files/var/www/public/
@@ -42,7 +42,7 @@ COPY --link --from=deps /var/www/public/ /files/var/www/public/
 RUN chmod -R go-w /files/var/www/public
 
 # https://hub.docker.com/_/nginx
-FROM nginx:1.29.3-alpine3.22-slim
+FROM nginx:1.29.8-alpine3.23-slim
 
 ARG NGINX_PUBLIC_DIR=/var/www/public
 ENV NGINX_PUBLIC_DIR $NGINX_PUBLIC_DIR

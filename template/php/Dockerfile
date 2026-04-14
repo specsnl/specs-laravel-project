@@ -1,11 +1,11 @@
 {{$dockerTag := "" }}
 
 {{- if eq PhpVersion "8.4"}}
-    {{- $dockerTag = "1.5.0" }}
+    {{- $dockerTag = "1.5.1" }}
 {{- else if eq PhpVersion "8.3"}}
-    {{- $dockerTag = "1.8.0" }}
+    {{- $dockerTag = "1.8.1" }}
 {{- else}}
-    {{- $dockerTag = "0.5.0" }}
+    {{- $dockerTag = "0.5.1" }}
 {{- end -}}
 
 # syntax=docker/dockerfile:1

@@ -193,7 +193,7 @@ jobs:
       - name: Run migrations
         run: php artisan --env=testing migrate:fresh --seed
       - name: Generate Model DocBlocks
-        run: php artisan ide-helper:models --write
+        run: php artisan --env=testing ide-helper:models --write
       - name: Check for changes in models directory
         run: |
           if ! git diff --quiet -- app/Models/; then

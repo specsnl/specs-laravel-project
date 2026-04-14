@@ -87,3 +87,7 @@ services:
     labels:
       - dev.orbstack.domains=mail.{{toKebabCase ProjectShortName}}.local
       - dev.orbstack.http-port=8025
+
+  markdown-linter:
+    image: davidanson/markdownlint-cli2:v0.22.0
+    profiles: [markdown-lint]

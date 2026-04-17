@@ -5,6 +5,5 @@
     "PhpVersion": ["8.5", "8.4", "8.3"],
     "RepoName": "specsnl/project",
     "ComposerLicense": ["MIT", "proprietary"],
-    "IssuePrefix": "ACM",
-    "UseSonarQube": false
+    "IssuePrefix": "ACM"
 }

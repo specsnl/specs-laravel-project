@@ -51,9 +51,7 @@ trait WithFaker
     #[Before()]
     protected function setupFakerForUnitTestCase(): void
     {
-        $this->faker = is_null(self::$staticFaker)
-            ? self::getFaker()
-            : self::$staticFaker;
+        $this->faker = self::$staticFaker ?? self::getFaker();
     }
 
     #[After()]

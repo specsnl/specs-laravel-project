@@ -8,12 +8,14 @@ updates:
       interval: "weekly"
     labels:
       - dependencies
+      - php
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "weekly"
     labels:
       - dependencies
+      - npm
     groups:
       vite:
         patterns:
@@ -25,6 +27,7 @@ updates:
       interval: "weekly"
     labels:
       - dependencies
+      - github-actions
     groups:
       specsnl-actions:
         patterns:
@@ -38,9 +41,11 @@ updates:
         update-types: ["version-update:semver-major", "version-update:semver-minor"]
     labels:
       - dependencies
+      - docker
   - package-ecosystem: "docker"
     directory: "/php"
     schedule:
       interval: "weekly"
     labels:
       - dependencies
+      - docker

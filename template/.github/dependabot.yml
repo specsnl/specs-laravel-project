@@ -25,6 +25,10 @@ updates:
       interval: "weekly"
     labels:
       - dependencies
+    groups:
+      specsnl-actions:
+        patterns:
+          - "specsnl/github-actions"
   - package-ecosystem: "docker"
     directory: "/nginx"
     schedule:

@@ -16,7 +16,7 @@ COPY --link ./composer.json ./composer.lock /var/www/
 
 RUN --mount=type=cache,target=/cache \
     --mount=type=secret,id=composer_auth,env=COMPOSER_AUTH \
-    composer install --no-progress --prefer-dist --no-scripts
+    composer install --no-progress --prefer-dist --no-dev --no-scripts
 
 COPY --link package.json package-lock.json vite.config.js /var/www/
 COPY --link resources /var/www/resources/
@@ -26,10 +26,6 @@ RUN --mount=type=cache,target=/cache \
     npm ci
 
 COPY --link ./ /var/www/
-
-RUN --mount=type=cache,target=/cache \
-    --mount=type=secret,id=composer_auth,env=COMPOSER_AUTH \
-    composer install --no-progress --prefer-dist
 
 RUN npm run build
 

@@ -6,17 +6,11 @@
     "keywords": [
         "laravel",
         "framework",
-        "{{kebabcase ProjectName}}"
+        "{{toKebabCase ProjectName}}"
     ],
     "license": "{{ComposerLicense}}",
     "require": {
-        {{- if eq PhpVersion "8.4"}}
-        "php": "^8.4",
-        {{- else if eq PhpVersion "8.3"}}
-        "php": "^8.3",
-        {{- else}}
-        "php": "^8.5",
-        {{- end}}
+        "php": "^{{ PhpVersion }}",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^3.0.0",
         "webmozart/assert": "^2.0.0"
@@ -24,6 +18,7 @@
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^3.5",
         "dg/bypass-finals": "^1.9",
+        "driftingly/rector-laravel": "^2.3",
         "fakerphp/faker": "^1.23",
         "itsgoingd/clockwork": "^5.3",
         "larastan/larastan": "^3.0",
@@ -35,7 +30,8 @@
         "phpstan/phpstan-mockery": "^2.0",
         "phpstan/phpstan-strict-rules": "^2.0",
         "phpstan/phpstan-webmozart-assert": "^2.0",
-        "phpunit/phpunit": "^13.0",
+        "phpunit/phpunit": "{{ if eq PhpVersion "8.3" }}^12.0{{ else }}^13.0{{ end }}",
+        "rector/rector": "^2.4",
         "shipmonk/phpstan-rules": "^4.0",
         "spatie/phpunit-snapshot-assertions": "^5.1",
         "specsnl/code-style": "^5.0.1",
@@ -72,11 +68,12 @@
             "composer validate --strict",
             "@checkstyle",
             "@checktype",
-            "@test"
+            "@test",
+            "@rector-dry"
         ],
         "test": [
             "Composer\\Config::disableProcessTimeout",
-            "XDEBUG_MODE=off REATE_SNAPSHOTS=false phpunit"
+            "XDEBUG_MODE=off CREATE_SNAPSHOTS=false phpunit"
         ],
         "test-report": [
             "Composer\\Config::disableProcessTimeout",
@@ -86,7 +83,9 @@
         "fixstyle": "XDEBUG_MODE=off phpcbf -n",
         "checktype": "XDEBUG_MODE=off phpstan analyse --memory-limit=-1 -v",
         "update-type-baseline": "XDEBUG_MODE=off phpstan --generate-baseline",
-        "update-test-snapshots": "XDEBUG_MODE=off UPDATE_SNAPSHOTS=true phpunit"
+        "update-test-snapshots": "XDEBUG_MODE=off UPDATE_SNAPSHOTS=true phpunit",
+        "rector": "rector",
+        "rector-dry": "rector --dry-run"
     },
     "extra": {
         "laravel": {
@@ -94,7 +93,6 @@
         }
     },
     "config": {
-        "optimize-autoloader": true,
         "preferred-install": "dist",
         "sort-packages": true,
         "allow-plugins": {
@@ -113,6 +111,8 @@
         "fixstyle": "Fix code style using php_codesniffer",
         "checktype": "Check code type using PHPStan",
         "update-type-baseline": "Update PHPStan baseline",
-        "update-test-snapshots": "Update PHPUnit snapshots"
+        "update-test-snapshots": "Update PHPUnit snapshots",
+        "rector": "Run Rector",
+        "rector-dry": "Run Rector in dry-run mode"
     }
 }

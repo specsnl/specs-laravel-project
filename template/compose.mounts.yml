@@ -1,5 +1,5 @@
 volumes:
-  {{snakecase ProjectShortName}}_cache:
+  {{toSnakeCase ProjectShortName}}_cache:
     external: true
   mariadb_data:
 
@@ -7,19 +7,19 @@ services:
   php-exec:
     volumes:
       - ./:/var/www/
-      - {{snakecase ProjectShortName}}_cache:/cache
+      - {{toSnakeCase ProjectShortName}}_cache:/cache
       - ./auth.json:/config/composer/auth.json:ro
 
   php:
     volumes:
       - ./:/var/www/
-      - {{snakecase ProjectShortName}}_cache:/cache
+      - {{toSnakeCase ProjectShortName}}_cache:/cache
       - ./auth.json:/config/composer/auth.json:ro
 
   worker:
     volumes:
       - ./:/var/www/
-      - {{snakecase ProjectShortName}}_cache:/cache
+      - {{toSnakeCase ProjectShortName}}_cache:/cache
       - ./auth.json:/config/composer/auth.json:ro
 
   nginx:
@@ -32,3 +32,7 @@ services:
       - mariadb_data:/var/lib/mysql
       - ./mariadb/init:/docker-entrypoint-initdb.d
       - ./mariadb/custom.cnf:/etc/mysql/conf.d/custom.cnf
+
+  markdown-linter:
+    volumes:
+      - ./:/workdir

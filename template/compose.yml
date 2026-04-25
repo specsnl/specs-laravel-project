@@ -1,11 +1,11 @@
 {{$dockerTag := "" }}
 
 {{- if eq PhpVersion "8.4"}}
-    {{- $dockerTag = "1.5.0" }}
+    {{- $dockerTag = "1.5.1" }}
 {{- else if eq PhpVersion "8.3"}}
-    {{- $dockerTag = "1.8.0" }}
+    {{- $dockerTag = "1.8.1" }}
 {{- else}}
-    {{- $dockerTag = "0.5.0" }}
+    {{- $dockerTag = "0.5.1" }}
 {{- end -}}
 
 secrets:
@@ -64,7 +64,7 @@ services:
     environment:
       CGI_HOST: "php.${COMPOSE_PROJECT_NAME}_default"
     labels:
-      - dev.orbstack.domains={{kebabcase ProjectShortName}}.local
+      - dev.orbstack.domains={{toKebabCase ProjectShortName}}.local
       - dev.orbstack.http-port=80
 
   mariadb:
@@ -75,15 +75,19 @@ services:
       MARIADB_USER: ${MARIADB_USER}
       MARIADB_PASSWORD: ${MARIADB_PASSWORD}
     labels:
-      - dev.orbstack.domains=db.{{kebabcase ProjectShortName}}.local
+      - dev.orbstack.domains=db.{{toKebabCase ProjectShortName}}.local
 
   redis:
     image: redis:7.4.2-bookworm
     labels:
-      - dev.orbstack.domains=redis.{{kebabcase ProjectShortName}}.local
+      - dev.orbstack.domains=redis.{{toKebabCase ProjectShortName}}.local
 
   mailpit:
-    image: axllent/mailpit:v1.22.3
+    image: axllent/mailpit:v1.29.7
     labels:
-      - dev.orbstack.domains=mail.{{kebabcase ProjectShortName}}.local
+      - dev.orbstack.domains=mail.{{toKebabCase ProjectShortName}}.local
       - dev.orbstack.http-port=8025
+
+  markdown-linter:
+    image: davidanson/markdownlint-cli2:v0.22.0
+    profiles: [markdown-lint]

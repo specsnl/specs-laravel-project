@@ -6,14 +6,15 @@ namespace App\Models;
 
 use Carbon\CarbonImmutable;
 use Database\Factories\UserFactory;
-use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Notifications\Notifiable;
+use Override;
 
 /**
  * @property int $id
@@ -30,7 +31,7 @@ use Illuminate\Notifications\Notifiable;
  * @method static Builder<static>|User newModelQuery()
  * @method static Builder<static>|User newQuery()
  * @method static Builder<static>|User query()
- * @mixin Eloquent
+ * @mixin Model
  */
 class User extends Authenticatable
 {
@@ -43,6 +44,7 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
+    #[Override]
     protected $fillable = [
         'name',
         'email',
@@ -54,6 +56,7 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
+    #[Override]
     protected $hidden = [
         'password',
         'remember_token',
@@ -64,6 +67,7 @@ class User extends Authenticatable
      *
      * @return array<string, string>
      */
+    #[Override]
     protected function casts(): array
     {
         return [

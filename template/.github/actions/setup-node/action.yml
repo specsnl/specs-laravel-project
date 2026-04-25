@@ -23,6 +23,12 @@ runs:
         registry-url: https://npm.pkg.github.com
         token: {{`${{ inputs.github-token }}`}}
 
+    - name: Run corepack enable and install
+      shell: bash
+      run: |
+        corepack enable
+        corepack install
+
     - name: Install npm dependencies
       shell: bash
       run: npm ci

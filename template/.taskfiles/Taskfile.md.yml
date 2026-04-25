@@ -1,24 +1,13 @@
 # https://taskfile.dev
-version: '3'
-
-vars:
-  # Latest version of MarkdownLint:
-  #   - https://hub.docker.com/r/davidanson/markdownlint-cli2/tags
-  #   - https://github.com/DavidAnson/markdownlint-cli2/tags
-  MARKDOWNLINT_VERSION: v0.20.0
+version: "3.50.0"
 
 tasks:
   checkstyle:
     desc: Check style of Markdown files
     cmds:
-      - docker run
-        --interactive
-        --tty
-        --rm
-        --volume $(pwd):/workdir
-        davidanson/markdownlint-cli2:{{`{{.MARKDOWNLINT_VERSION}}`}}
-        {{`{{.SUB_CMD}}`}}
-        {{`{{.CLI_ARGS}}`}}
+      - task: :dc:run:markdown-linter
+        vars:
+          SUB_CMD: "{{`{{.SUB_CMD}}`}}"
 
   fixstyle:
     desc: Fix style of Markdown files

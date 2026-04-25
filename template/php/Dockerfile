@@ -1,11 +1,11 @@
 {{$dockerTag := "" }}
 
 {{- if eq PhpVersion "8.4"}}
-    {{- $dockerTag = "1.5.0" }}
+    {{- $dockerTag = "1.5.1" }}
 {{- else if eq PhpVersion "8.3"}}
-    {{- $dockerTag = "1.8.0" }}
+    {{- $dockerTag = "1.8.1" }}
 {{- else}}
-    {{- $dockerTag = "0.5.0" }}
+    {{- $dockerTag = "0.5.1" }}
 {{- end -}}
 
 # syntax=docker/dockerfile:1
@@ -36,6 +36,8 @@ RUN --mount=type=cache,target=/cache \
 RUN npm run build
 
 FROM ghcr.io/specsnl/php{{ PhpVersion | replace "."  "" }}:builder_nodejs-{{$dockerTag}} AS builder-base
+
+ARG DEBIAN_FRONTEND=noninteractive
 
 ENV PATH="$PATH:/var/www/vendor/bin"
 

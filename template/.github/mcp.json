@@ -1,6 +1,7 @@
 {
     "mcpServers": {
         "laravel-boost": {
+            "type": "local",
             "command": "docker",
             "args": [
                 "compose",

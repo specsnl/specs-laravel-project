@@ -7,7 +7,7 @@ tasks:
     cmds:
       - task: :dc:run:markdown-linter
         vars:
-          SUB_CMD: "{{`{{.SUB_CMD}}`}}"
+          SUB_CMD: "{{ .SUB_CMD }}"
 
   fixstyle:
     desc: Fix style of Markdown files

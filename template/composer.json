@@ -1,16 +1,16 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "{{RepoName}}",
+    "name": "[[ .RepoName ]]",
     "type": "project",
-    "description": "{{ProjectDescription}}",
+    "description": "[[ .ProjectDescription ]]",
     "keywords": [
         "laravel",
         "framework",
-        "{{toKebabCase ProjectName}}"
+        "[[ .ProjectName | toKebabCase ]]"
     ],
-    "license": "{{ComposerLicense}}",
+    "license": "[[ .ComposerLicense ]]",
     "require": {
-        "php": "^{{ PhpVersion }}",
+        "php": "^[[ .PhpVersion ]]",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^3.0.0",
         "webmozart/assert": "^2.0.0"
@@ -30,7 +30,7 @@
         "phpstan/phpstan-mockery": "^2.0",
         "phpstan/phpstan-strict-rules": "^2.0",
         "phpstan/phpstan-webmozart-assert": "^2.0",
-        "phpunit/phpunit": "{{ if eq PhpVersion "8.3" }}^12.0{{ else }}^13.0{{ end }}",
+        "phpunit/phpunit": "[[ if eq .PhpVersion "8.3" ]]^12.0[[ else ]]^13.0[[ end ]]",
         "rector/rector": "^2.4",
         "shipmonk/phpstan-rules": "^4.0",
         "spatie/phpunit-snapshot-assertions": "^5.1",

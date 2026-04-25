@@ -4,7 +4,7 @@ description: Compose action that sets up PHP and Composer
 inputs:
   php-version:
     description: The PHP version
-    default: "{{ PhpVersion }}"
+    default: "[[ .PhpVersion ]]"
   coverage:
     description: Set PHP coverage driver
     default: none
@@ -28,20 +28,20 @@ runs:
       uses: actions/cache/restore@v5
       with:
         path: |
-          {{`${{ steps.composer-cache-dir.outputs.dir }}`}}
+          ${{ steps.composer-cache-dir.outputs.dir }}
           vendor
-        key: {{`${{ runner.os }}-composer-${{ hashFiles('composer.lock') }}`}}
-        restore-keys: {{`${{ runner.os }}-composer-`}}
+        key: ${{ runner.os }}-composer-${{ hashFiles('composer.lock') }}
+        restore-keys: ${{ runner.os }}-composer-
 
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: {{`${{ inputs.php-version }}`}}
-        coverage: {{`${{ inputs.coverage }}`}}
-        extensions: {{`${{ inputs.extensions }}`}}
-        github-token: {{`${{ inputs.github-token }}`}}
+        php-version: ${{ inputs.php-version }}
+        coverage: ${{ inputs.coverage }}
+        extensions: ${{ inputs.extensions }}
+        github-token: ${{ inputs.github-token }}
       env:
-        COMPOSER_AUTH_JSON: {{`${{ inputs.composer-auth-json }}`}}
+        COMPOSER_AUTH_JSON: ${{ inputs.composer-auth-json }}
 
     - name: Install dependencies
       shell: bash
@@ -60,10 +60,10 @@ runs:
       run: sed -i 's#^\(DB_HOST=\).*#\1127.0.0.1#' .env.testing
 
     - name: Save Composer cache
-      if: {{`${{ steps.composer-cache.outputs.cache-hit != 'true' }}`}}
+      if: ${{ steps.composer-cache.outputs.cache-hit != 'true' }}
       uses: actions/cache/save@v5
       with:
         path: |
-          {{`${{ steps.composer-cache-dir.outputs.dir }}`}}
+          ${{ steps.composer-cache-dir.outputs.dir }}
           vendor
-        key: {{`${{ runner.os }}-composer-${{ hashFiles('composer.lock') }}`}}
+        key: ${{ runner.os }}-composer-${{ hashFiles('composer.lock') }}

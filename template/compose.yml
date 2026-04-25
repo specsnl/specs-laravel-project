@@ -83,7 +83,7 @@ services:
       - dev.orbstack.domains=redis.{{toKebabCase ProjectShortName}}.local
 
   mailpit:
-    image: axllent/mailpit:v1.28.1
+    image: axllent/mailpit:v1.29.7
     labels:
       - dev.orbstack.domains=mail.{{toKebabCase ProjectShortName}}.local
       - dev.orbstack.http-port=8025

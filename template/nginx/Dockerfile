@@ -4,7 +4,7 @@
     [[- $dockerTag = "1.5.1" ]]
 [[- else if eq .PhpVersion "8.3" ]]
     [[- $dockerTag = "1.8.1" ]]
-[[- else]]
+[[- else ]]
     [[- $dockerTag = "0.5.1" ]]
 [[- end -]]
 

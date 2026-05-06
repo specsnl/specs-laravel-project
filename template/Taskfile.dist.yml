@@ -6,7 +6,7 @@ vars:
     sh: pwd
   ORBSTACK_ENABLED:
     sh: test "$(docker context show)" = "orbstack" && echo 1 || echo 0
-  ORB_APP_HOST: https://[[ .ProjectShortName toKebabCase ]].local
+  ORB_APP_HOST: https://[[ .ProjectShortName | toKebabCase ]].local
   DOCKER_CACHE_VOLUMES: [ [[ .ProjectShortName | toSnakeCase ]]_cache ]
 
 # env:

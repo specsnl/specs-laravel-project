@@ -64,7 +64,7 @@ services:
     environment:
       CGI_HOST: "php.${COMPOSE_PROJECT_NAME}_default"
     labels:
-      - dev.orbstack.domains=[[toKebabCase ProjectShortName]].local
+      - dev.orbstack.domains=[[ .ProjectShortName | toKebabCase ]].local
       - dev.orbstack.http-port=80
 
   mariadb:
@@ -75,17 +75,17 @@ services:
       MARIADB_USER: ${MARIADB_USER}
       MARIADB_PASSWORD: ${MARIADB_PASSWORD}
     labels:
-      - dev.orbstack.domains=db.[[toKebabCase ProjectShortName]].local
+      - dev.orbstack.domains=db.[[ .ProjectShortName | toKebabCase ]].local
 
   redis:
     image: redis:7.4.2-bookworm
     labels:
-      - dev.orbstack.domains=redis.[[toKebabCase ProjectShortName]].local
+      - dev.orbstack.domains=redis.[[ .ProjectShortName | toKebabCase ]].local
 
   mailpit:
     image: axllent/mailpit:v1.29.7
     labels:
-      - dev.orbstack.domains=mail.[[toKebabCase ProjectShortName]].local
+      - dev.orbstack.domains=mail.[[ .ProjectShortName | toKebabCase ]].local
       - dev.orbstack.http-port=8025
 
   markdown-linter:

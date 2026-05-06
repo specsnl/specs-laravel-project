@@ -1,3 +1,6 @@
+__delimiters:
+  left: "[["
+  right: "]]"
 
 ProjectName: My Acme Project
 ProjectShortName: acme-12

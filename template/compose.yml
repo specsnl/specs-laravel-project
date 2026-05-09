@@ -78,7 +78,7 @@ services:
       - dev.orbstack.domains=db.[[ .ProjectShortName | toKebabCase ]].local
 
   redis:
-    image: redis:7.4.2-bookworm
+    image: redis:7.4.9-bookworm
     labels:
       - dev.orbstack.domains=redis.[[ .ProjectShortName | toKebabCase ]].local
 
@@ -89,5 +89,5 @@ services:
       - dev.orbstack.http-port=8025
 
   markdown-linter:
-    image: davidanson/markdownlint-cli2:v0.22.0
+    image: davidanson/markdownlint-cli2:v0.22.1
     profiles: [markdown-lint]

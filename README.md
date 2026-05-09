@@ -1,6 +1,6 @@
 # specsnl/boilr-laravel-project
 
-A [Boilr](https://github.com/Ilyes512/boilr) template for PHP Laravel 12 projects.
+A [Boilr](https://github.com/Ilyes512/boilr) template for PHP Laravel 13 projects.
 
 ## Install/Usage instructions
 

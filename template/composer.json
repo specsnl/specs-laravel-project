@@ -11,7 +11,7 @@
     "license": "[[ .ComposerLicense ]]",
     "require": {
         "php": "^[[ .PhpVersion ]]",
-        "laravel/framework": "^12.0",
+        "laravel/framework": "^13.0",
         "laravel/tinker": "^3.0.0",
         "webmozart/assert": "^2.0.0"
     },

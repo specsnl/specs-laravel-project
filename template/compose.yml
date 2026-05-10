@@ -67,7 +67,7 @@ services:
       - dev.orbstack.domains=[[ .ProjectShortName | toKebabCase ]].local
       - dev.orbstack.http-port=80
 
-[[ if eq .Database "postgres" ]]
+[[- if eq .Database "postgres" ]]
 
   postgres:
     image: postgres:18.3-trixie

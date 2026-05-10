@@ -14,3 +14,22 @@ ComposerLicense:
   - MIT
   - proprietary
 IssuePrefix: ACME
+Database:
+  - postgres
+  - mariadb
+
+computed:
+  DockerDbPort: >-
+    [[ eq .Database "postgres" | ternary "5432" "3306" ]]
+
+  DbConnection: >-
+    [[ eq .Database "postgres" | ternary "pgsql" "mariadb" ]]
+  DbHost: >-
+    [[ .Database ]]
+  DbPort: >-
+    [[ eq .Database "postgres" | ternary "5432" "3306" ]]
+  DbDatabase: >-
+    [[ .ProjectShortName | toSnakeCase ]]
+  DbUsername: >-
+    [[ .ProjectShortName | toSnakeCase ]]
+  DbPassword: password

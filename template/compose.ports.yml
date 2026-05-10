@@ -3,9 +3,19 @@ services:
     ports:
       - ${DOCKER_NGINX_PORT:-8080}:80
 
+[[ if eq .Database "postgres" ]]
+
+  postgres:
+    ports:
+      - ${DOCKER_POSTGRES_PORT:-5432}:5432
+
+[[- else ]]
+
   mariadb:
     ports:
       - ${DOCKER_MARIADB_PORT:-3306}:3306
+
+[[- end ]]
 
   redis:
     ports:

@@ -32,7 +32,7 @@ tasks:
       - task: :artisan:run:storage:link
         vars: { SUB_CMD: '--quiet' }
       - task: :dc:run:php
-        vars: { SUB_CMD: 'bash -c "wait-for-it mariadb:3306 --timeout=0 --strict -- echo \"Done waiting\""' }
+        vars: { SUB_CMD: 'bash -c "wait-for-it [[ .DbHost ]]:[[ .DbPort ]] --timeout=0 --strict -- echo \"Done waiting\""' }
       - task: :db:migrate-fresh:local
       - task: :db:migrate-fresh:testing
       - task: :npm:run:build

@@ -45,13 +45,13 @@ services:
     command:
       - bash
       - -c
-      - "trap : 3 ; wait-for-it mariadb:3306 --strict --timeout=20 -- wait-for-it redis:6379 --strict --timeout=20 -- php artisan queue:listen --sleep=10 & wait"
+      - "trap : 3 ; wait-for-it [[ .DbHost ]]:[[ .DbPort ]] --strict --timeout=20 -- wait-for-it redis:6379 --strict --timeout=20 -- php artisan queue:listen --sleep=10 & wait"
     environment:
       PHP_COMPOSER_INSTALL_DEV: false
     depends_on:
       - php
       - redis
-      - mariadb
+      - [[ .DbHost ]]
 
   nginx:
     build:
@@ -67,6 +67,18 @@ services:
       - dev.orbstack.domains=[[ .ProjectShortName | toKebabCase ]].local
       - dev.orbstack.http-port=80
 
+[[ if eq .Database "postgres" ]]
+
+  postgres:
+    image: postgres:18.3-trixie
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    labels:
+      - dev.orbstack.domains=pg.[[ .ProjectShortName | toKebabCase ]].local
+[[- else ]]
+
   mariadb:
     image: mariadb:11.8.6-noble
     environment:
@@ -76,6 +88,7 @@ services:
       MARIADB_PASSWORD: ${MARIADB_PASSWORD}
     labels:
       - dev.orbstack.domains=db.[[ .ProjectShortName | toKebabCase ]].local
+[[- end ]]
 
   redis:
     image: redis:7.4.9-bookworm

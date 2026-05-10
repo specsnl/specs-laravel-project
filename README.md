@@ -5,7 +5,7 @@ A [Specs](https://github.com/specsnl/specs-cli) template for PHP Laravel 13 proj
 ## Install/Usage instructions
 
 **Requirements:**
-- [Specs Cli](https://github.com/specsnl/specs-cli)
+- [Specs CLI](https://github.com/specsnl/specs-cli)
 
 Download the template and store it locally:
 

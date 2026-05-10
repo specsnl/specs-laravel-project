@@ -9,7 +9,7 @@ tasks:
       PROJECT_EXISTS:
         sh: 'docker compose ps --all --services'
     status:
-      - test ! -z "{{`{{.PROJECT_EXISTS}}`}}"
+      - test ! -z "{{ .PROJECT_EXISTS }}"
     cmds:
       - task: do
 
@@ -32,7 +32,7 @@ tasks:
       - task: :artisan:run:storage:link
         vars: { SUB_CMD: '--quiet' }
       - task: :dc:run:php
-        vars: { SUB_CMD: 'bash -c "wait-for-it mariadb:3306 --timeout=0 --strict -- echo \"Done waiting\""' }
+        vars: { SUB_CMD: 'bash -c "wait-for-it [[ .DbHost ]]:[[ .DbPort ]] --timeout=0 --strict -- echo \"Done waiting\""' }
       - task: :db:migrate-fresh:local
       - task: :db:migrate-fresh:testing
       - task: :npm:run:build
@@ -47,8 +47,8 @@ tasks:
     cmds:
       - for: { var: DOCKER_CACHE_VOLUMES }
         cmd: |
-          docker volume create {{`{{.ITEM}}`}} > /dev/null
-          docker run --rm --volume "{{`{{.ITEM}}`}}:/vol" busybox:1.37.0-musl chown -R {{`{{.FIXUID}}`}}:{{`{{.FIXGID}}`}} /vol
+          docker volume create {{ .ITEM }} > /dev/null
+          docker run --rm --volume "{{ .ITEM }}:/vol" busybox:1.37.0-musl chown -R {{ .FIXUID }}:{{ .FIXGID }} /vol
 
   init:composer-lock:
     desc: Run composer update if composer.lock does not exist yet
@@ -72,8 +72,8 @@ tasks:
     cmds:
       - cp .env.example .env
       - cmd: |
-          if [ "{{`{{.ORBSTACK_ENABLED }}`}}" = "1" ]; then
-            sed -i '' 's#^\(APP_URL=\).*#\1{{`{{.ORB_APP_HOST}}`}}#' .env
+          if [ "{{ .ORBSTACK_ENABLED }}" = "1" ]; then
+            sed -i '' 's#^\(APP_URL=\).*#\1{{ .ORB_APP_HOST }}#' .env
           fi
         platforms: [darwin]
     sources:

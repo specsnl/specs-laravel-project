@@ -1,25 +1,25 @@
 volumes:
-  {{toSnakeCase ProjectShortName}}_cache:
+  [[ .ProjectShortName |toSnakeCase ]]_cache:
     external: true
-  mariadb_data:
+  [[ eq .Database "postgres" | ternary "postgres_data:" "mariadb_data:" ]]
 
 services:
   php-exec:
     volumes:
       - ./:/var/www/
-      - {{toSnakeCase ProjectShortName}}_cache:/cache
+      - [[ .ProjectShortName | toSnakeCase ]]_cache:/cache
       - ./auth.json:/config/composer/auth.json:ro
 
   php:
     volumes:
       - ./:/var/www/
-      - {{toSnakeCase ProjectShortName}}_cache:/cache
+      - [[ .ProjectShortName | toSnakeCase ]]_cache:/cache
       - ./auth.json:/config/composer/auth.json:ro
 
   worker:
     volumes:
       - ./:/var/www/
-      - {{toSnakeCase ProjectShortName}}_cache:/cache
+      - [[ .ProjectShortName | toSnakeCase ]]_cache:/cache
       - ./auth.json:/config/composer/auth.json:ro
 
   nginx:
@@ -27,11 +27,20 @@ services:
       - ./public:/var/www/public
       - ./storage:/var/www/storage
 
+[[- if eq .Database "postgres" ]]
+
+  postgres:
+    volumes:
+      - postgres_data:/var/lib/postgresql
+      - ./postgres/init:/docker-entrypoint-initdb.d
+[[- else ]]
+
   mariadb:
     volumes:
       - mariadb_data:/var/lib/mysql
       - ./mariadb/init:/docker-entrypoint-initdb.d
       - ./mariadb/custom.cnf:/etc/mysql/conf.d/custom.cnf
+[[- end ]]
 
   markdown-linter:
     volumes:

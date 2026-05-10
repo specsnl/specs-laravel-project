@@ -18,10 +18,10 @@ runs:
       uses: actions/setup-node@v6
       id: setup-node
       with:
-        node-version: {{`${{ inputs.node-version }}`}}
+        node-version: ${{ inputs.node-version }}
         cache: npm
         registry-url: https://npm.pkg.github.com
-        token: {{`${{ inputs.github-token }}`}}
+        token: ${{ inputs.github-token }}
 
     - name: Run corepack enable and install
       shell: bash
@@ -34,6 +34,6 @@ runs:
       run: npm ci
 
     - name: Run npm build
-      if: {{`${{ inputs.run-npm-build == 'true' }}`}}
+      if: ${{ inputs.run-npm-build == 'true' }}
       shell: bash
       run: npm run build

@@ -16,8 +16,8 @@ export default defineConfig({
         },
         cors: {
             origin: [
-                'http://{{toKebabCase ProjectShortName}}.local',
-                'https://{{toKebabCase ProjectShortName}}.local',
+                'http://[[ .ProjectShortName | toKebabCase ]].local',
+                'https://[[ .ProjectShortName | toKebabCase ]].local',
             ],
         }
     },

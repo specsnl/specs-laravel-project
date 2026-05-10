@@ -1,16 +1,16 @@
-{{$dockerTag := "" }}
+[[ $dockerTag := "" ]]
 
-{{- if eq PhpVersion "8.4"}}
-    {{- $dockerTag = "1.5.1" }}
-{{- else if eq PhpVersion "8.3"}}
-    {{- $dockerTag = "1.8.1" }}
-{{- else}}
-    {{- $dockerTag = "0.5.1" }}
-{{- end -}}
+[[- if eq .PhpVersion "8.4" ]]
+    [[- $dockerTag = "1.5.1" ]]
+[[- else if eq .PhpVersion "8.3" ]]
+    [[- $dockerTag = "1.8.1" ]]
+[[- else ]]
+    [[- $dockerTag = "0.5.1" ]]
+[[- end -]]
 
 # syntax=docker/dockerfile:1
 
-FROM ghcr.io/specsnl/php{{ PhpVersion | replace "."  "" }}:builder_nodejs-{{$dockerTag}} AS deps
+FROM ghcr.io/specsnl/php[[ .PhpVersion | replace "."  "" ]]:builder_nodejs-[[$dockerTag]] AS deps
 
 COPY --link ./composer.json ./composer.lock /var/www/
 

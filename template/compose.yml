@@ -1,12 +1,12 @@
-{{$dockerTag := "" }}
+[[ $dockerTag := "" ]]
 
-{{- if eq PhpVersion "8.4"}}
-    {{- $dockerTag = "1.5.1" }}
-{{- else if eq PhpVersion "8.3"}}
-    {{- $dockerTag = "1.8.1" }}
-{{- else}}
-    {{- $dockerTag = "0.5.1" }}
-{{- end -}}
+[[- if eq .PhpVersion "8.4" ]]
+    [[- $dockerTag = "1.5.1" ]]
+[[- else if eq .PhpVersion "8.3" ]]
+    [[- $dockerTag = "1.8.1" ]]
+[[- else ]]
+    [[- $dockerTag = "0.5.1" ]]
+[[- end -]]
 
 secrets:
   composer_auth:
@@ -16,7 +16,7 @@ services:
   php-exec:
     user: ${FIXUID:-1000}:${FIXGID:-1000}
     entrypoint: ["fixuid", "-q"]
-    image: ghcr.io/specsnl/php{{ PhpVersion | replace "."  "" }}:builder_nodejs-{{ $dockerTag }}
+    image: ghcr.io/specsnl/php[[ .PhpVersion | replace "."  "" ]]:builder_nodejs-[[ $dockerTag ]]
     profiles: [exec]
     environment:
       COREPACK_DEFAULT_TO_LATEST: 0
@@ -45,13 +45,13 @@ services:
     command:
       - bash
       - -c
-      - "trap : 3 ; wait-for-it mariadb:3306 --strict --timeout=20 -- wait-for-it redis:6379 --strict --timeout=20 -- php artisan queue:listen --sleep=10 & wait"
+      - "trap : 3 ; wait-for-it [[ .DbHost ]]:[[ .DbPort ]] --strict --timeout=20 -- wait-for-it redis:6379 --strict --timeout=20 -- php artisan queue:listen --sleep=10 & wait"
     environment:
       PHP_COMPOSER_INSTALL_DEV: false
     depends_on:
       - php
       - redis
-      - mariadb
+      - [[ .DbHost ]]
 
   nginx:
     build:
@@ -64,8 +64,20 @@ services:
     environment:
       CGI_HOST: "php.${COMPOSE_PROJECT_NAME}_default"
     labels:
-      - dev.orbstack.domains={{toKebabCase ProjectShortName}}.local
+      - dev.orbstack.domains=[[ .ProjectShortName | toKebabCase ]].local
       - dev.orbstack.http-port=80
+
+[[ if eq .Database "postgres" ]]
+
+  postgres:
+    image: postgres:18.3-trixie
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    labels:
+      - dev.orbstack.domains=pg.[[ .ProjectShortName | toKebabCase ]].local
+[[- else ]]
 
   mariadb:
     image: mariadb:11.8.6-noble
@@ -75,19 +87,20 @@ services:
       MARIADB_USER: ${MARIADB_USER}
       MARIADB_PASSWORD: ${MARIADB_PASSWORD}
     labels:
-      - dev.orbstack.domains=db.{{toKebabCase ProjectShortName}}.local
+      - dev.orbstack.domains=db.[[ .ProjectShortName | toKebabCase ]].local
+[[- end ]]
 
   redis:
-    image: redis:7.4.2-bookworm
+    image: redis:7.4.9-bookworm
     labels:
-      - dev.orbstack.domains=redis.{{toKebabCase ProjectShortName}}.local
+      - dev.orbstack.domains=redis.[[ .ProjectShortName | toKebabCase ]].local
 
   mailpit:
     image: axllent/mailpit:v1.29.7
     labels:
-      - dev.orbstack.domains=mail.{{toKebabCase ProjectShortName}}.local
+      - dev.orbstack.domains=mail.[[ .ProjectShortName | toKebabCase ]].local
       - dev.orbstack.http-port=8025
 
   markdown-linter:
-    image: davidanson/markdownlint-cli2:v0.22.0
+    image: davidanson/markdownlint-cli2:v0.22.1
     profiles: [markdown-lint]

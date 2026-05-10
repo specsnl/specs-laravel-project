@@ -6,8 +6,8 @@ vars:
     sh: pwd
   ORBSTACK_ENABLED:
     sh: test "$(docker context show)" = "orbstack" && echo 1 || echo 0
-  ORB_APP_HOST: https://{{toKebabCase ProjectShortName}}.local
-  DOCKER_CACHE_VOLUMES: [ {{toSnakeCase ProjectShortName}}_cache ]
+  ORB_APP_HOST: https://[[ .ProjectShortName | toKebabCase ]].local
+  DOCKER_CACHE_VOLUMES: [ [[ .ProjectShortName | toSnakeCase ]]_cache ]
 
 # env:
 #   BUILDKIT_PROGRESS: plain
@@ -34,24 +34,24 @@ tasks:
     cmds:
       - task: setup:create:volumes
       - >-
-        FIXUID={{`{{.FIXUID}}`}} FIXGID={{`{{.FIXGID}}`}}
+        FIXUID={{ .FIXUID }} FIXGID={{ .FIXGID }}
         docker compose
         --file compose.yml
         --file compose.mounts.yml
-        {{`{{ if eq .ORBSTACK_ENABLED "0" }}`}}
+        {{ if eq .ORBSTACK_ENABLED "0" }}
         --file compose.ports.yml
-        {{`{{ end }}`}}
-        {{`{{.SUB_CMD}}`}} {{`{{.CLI_ARGS}}`}}
+        {{ end }}
+        {{ .SUB_CMD }} {{ .CLI_ARGS }}
 
   dc:run:*:
     interactive: true
     vars:
-      SERVICE: '{{`{{index .MATCH 0}}`}}'
+      SERVICE: '{{ index .MATCH 0 }}'
     cmds:
       - task: dc
         vars:
-          SUB_CMD: 'run --rm --user $(id -u):$(id -g) {{`{{.SERVICE}}`}} {{`{{.SUB_CMD}}`}}'
-          CLI_ARGS: '{{`{{.CLI_ARGS}}`}}'
+          SUB_CMD: 'run --rm --user $(id -u):$(id -g) {{ .SERVICE }} {{ .SUB_CMD }}'
+          CLI_ARGS: '{{ .CLI_ARGS }}'
 
   dc:build:
     desc: Build all docker images
@@ -117,11 +117,11 @@ tasks:
   shell:*:
     desc: Open a bash shell to a service
     vars:
-      SERVICE: '{{`{{index .MATCH 0}}`}}'
+      SERVICE: '{{ index .MATCH 0 }}'
     cmds:
       - task: dc
         vars:
-          SUB_CMD: 'exec {{`{{.SERVICE}}`}} /bin/bash'
+          SUB_CMD: 'exec {{ .SERVICE }} /bin/bash'
 
   checkall:
     desc: Run all checks

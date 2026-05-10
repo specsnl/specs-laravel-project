@@ -7,11 +7,19 @@ tasks:
     cmds:
       - task: :dc:run:markdown-linter
         vars:
-          SUB_CMD: "{{`{{.SUB_CMD}}`}}"
+          SUB_CMD: "{{ .SUB_CMD }}"
 
   fixstyle:
     desc: Fix style of Markdown files
     cmds:
+      - task: fix-tables
       - task: checkstyle
         vars:
           SUB_CMD: --fix
+
+  fix-tables:
+    desc: Fix table spacing in markdown files
+    cmds:
+      - task: :dc:run:php-exec
+        vars:
+          SUB_CMD: bash -c "shopt -s globstar && npx --yes markdown-table-formatter **/*.md"

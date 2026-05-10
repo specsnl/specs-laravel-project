@@ -2,7 +2,7 @@
     "name": "Tags must have v-prefix",
     "target": "tag",
     "source_type": "Repository",
-    "source": "{{RepoName}}",
+    "source": "[[ .RepoName ]]",
     "enforcement": "active",
     "conditions": {
         "ref_name": {

@@ -1,11 +1,23 @@
-# specsnl/boilr-laravel-project
+# specsnl/specs-laravel-project
 
-A [Boilr](https://github.com/Ilyes512/boilr) template for PHP Laravel 13 projects.
+A [Specs](https://github.com/specsnl/specs-cli) template for PHP Laravel 13 projects.
 
 ## Install/Usage instructions
 
 **Requirements:**
-- [Boilr](https://github.com/Ilyes512/boilr#installation)
+- [Specs Cli](https://github.com/specsnl/specs-cli)
+
+Download the template and store it locally:
+
+```bash
+specs template download github:specsnl/specs-laravel-project laravel-project
+```
+
+Or use it directly without downloading:
+
+```bash
+specs use github:specsnl/specs-laravel-project <dir-name>
+```
 
 ## Overview task commands
 

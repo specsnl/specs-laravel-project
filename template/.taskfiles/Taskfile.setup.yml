@@ -92,10 +92,12 @@ tasks:
       - .env.testing
 
   auth:
-    desc: Configure Filament Blueprint authentication by creating an local auth.json file.
+    desc: Configure composer authentication by creating an local auth.json file.
     status:
       - test -f auth.json
     cmds:
+      - cmd: rmdir auth.json
+        if: test -d auth.json
       - task: auth:do
 
   auth:do:

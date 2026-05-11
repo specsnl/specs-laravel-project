@@ -1,4 +1,4 @@
-# specsnl/specs-laravel-project
+# specs-laravel-project
 
 A [Specs](https://github.com/specsnl/specs-cli) template for PHP Laravel 13 projects.
 

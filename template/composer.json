@@ -11,6 +11,9 @@
     "license": "[[ .ComposerLicense ]]",
     "require": {
         "php": "^[[ .PhpVersion ]]",
+        [[- if .AddBugSnag ]]
+        "bugsnag/bugsnag-laravel": "^2.3",
+        [[- end ]]
         "laravel/framework": "^13.0",
         "laravel/tinker": "^3.0.0",
         "webmozart/assert": "^2.0.0"

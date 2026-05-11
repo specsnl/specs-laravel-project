@@ -17,6 +17,7 @@ IssuePrefix: ACME
 Database:
   - postgres
   - mariadb
+AddBugSnag: false
 
 computed:
   DockerDbPort: >-

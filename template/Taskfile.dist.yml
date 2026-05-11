@@ -43,6 +43,14 @@ tasks:
         {{ end }}
         {{ .SUB_CMD }} {{ .CLI_ARGS }}
 
+  dc:run:php-exec:
+    cmds:
+      - task: setup:auth
+      - task: dc
+        vars:
+          SUB_CMD: 'run --rm --user $(id -u):$(id -g) php-exec {{ .SUB_CMD }}'
+          CLI_ARGS: '{{ .CLI_ARGS }}'
+
   dc:run:*:
     interactive: true
     vars:

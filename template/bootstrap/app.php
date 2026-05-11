@@ -2,9 +2,15 @@
 
 declare(strict_types=1);
 
+[[ if .AddBugSnag ]]use Bugsnag\BugsnagLaravel\OomBootstrapper;
+[[ end -]]
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+
+[[if .AddBugSnag ]](new OomBootstrapper())->bootstrap();
+
+[[ end -]]
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(

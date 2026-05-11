@@ -129,6 +129,12 @@ return [
             'path' => storage_path('logs/laravel.log'),
         ],
 
+        [[- if .AddBugSnag ]]
+
+        'bugsnag' => [
+            'driver' => 'bugsnag',
+        ],
+        [[- end ]]
     ],
 
 ];

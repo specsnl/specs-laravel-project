@@ -1,11 +1,11 @@
 [[ $dockerTag := "" ]]
 
 [[- if eq .PhpVersion "8.4" ]]
-    [[- $dockerTag = "1.5.1" ]]
+    [[- $dockerTag = "1.5.2" ]]
 [[- else if eq .PhpVersion "8.3" ]]
-    [[- $dockerTag = "1.8.1" ]]
+    [[- $dockerTag = "1.8.2" ]]
 [[- else ]]
-    [[- $dockerTag = "0.5.1" ]]
+    [[- $dockerTag = "0.5.2" ]]
 [[- end -]]
 
 # syntax=docker/dockerfile:1

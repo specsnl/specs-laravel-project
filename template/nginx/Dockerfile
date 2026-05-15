@@ -38,7 +38,7 @@ COPY --link --from=deps /var/www/public/ /files/var/www/public/
 RUN chmod -R go-w /files/var/www/public
 
 # https://hub.docker.com/_/nginx
-FROM nginx:1.30.0-alpine3.23-slim
+FROM nginx:1.31.0-alpine3.23-slim
 
 ARG NGINX_PUBLIC_DIR=/var/www/public
 ENV NGINX_PUBLIC_DIR $NGINX_PUBLIC_DIR

@@ -48,6 +48,10 @@
                     {
                         "context": "Check markdown style",
                         "integration_id": 15368
+                    },
+                    {
+                        "context": "Markdown gate",
+                        "integration_id": 15368
                     }
                 ]
             }

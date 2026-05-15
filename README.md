@@ -28,11 +28,11 @@ $ task --list
 
 task: Available tasks for this project:
 * cleanup:                Cleanup of almost all git gitignored files and untracked files
-* test:                   Test the boilr template
-* update:                 Update the boilr template
+* test:                   Test the specs template
+* update:                 Update the specs template
 * cleanup:dry-run:        Display all files that are either ignored or untracked
-* test:cleanup:           Cleanup boilr template test files
-* test:interactive:       Test the boilr template interactivly
+* test:cleanup:           Cleanup specs template test files
+* test:interactive:       Test the specs template interactivly
 ```
 
 ## Links

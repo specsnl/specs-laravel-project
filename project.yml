@@ -4,7 +4,7 @@ __delimiters:
 
 ProjectName: My Acme Project
 ProjectShortName: acme-12
-ProjectDescription: This Laravel project is scaffolded using specsnl/specs-cli using the specsnl/boilr-laravel-projectå.
+ProjectDescription: This Laravel project is scaffolded using specsnl/specs-cli using the specsnl/specs-laravel-project.
 PhpVersion:
   - "8.5"
   - "8.4"

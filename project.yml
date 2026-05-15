@@ -4,7 +4,7 @@ __delimiters:
 
 ProjectName: My Acme Project
 ProjectShortName: acme-12
-ProjectDescription: This Laravel project is scaffolded using Boilr-tool (<https://github.com/Ilyes512/boilr>) using the boilr-laravel-project-template (<https://github.com/specsnl/boilr-laravel-project>).
+ProjectDescription: This Laravel project is scaffolded using specsnl/specs-cli using the specsnl/boilr-laravel-projectå.
 PhpVersion:
   - "8.5"
   - "8.4"

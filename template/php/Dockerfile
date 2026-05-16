@@ -1,16 +1,6 @@
-[[ $dockerTag := "" ]]
-
-[[- if eq .PhpVersion "8.4" ]]
-    [[- $dockerTag = "1.5.2" ]]
-[[- else if eq .PhpVersion "8.3" ]]
-    [[- $dockerTag = "1.8.2" ]]
-[[- else ]]
-    [[- $dockerTag = "0.5.2" ]]
-[[- end -]]
-
 # syntax=docker/dockerfile:1
 
-FROM ghcr.io/specsnl/php[[ .PhpVersion | replace "."  "" ]]:builder_nodejs-[[ $dockerTag]] AS deps
+FROM ghcr.io/specsnl/php[[ .PhpVersion | replace "."  "" ]]:builder_nodejs-[[ .PhpDockerTag]] AS deps
 
 ARG COMPOSER_AUTH
 
@@ -35,7 +25,7 @@ RUN --mount=type=cache,target=/cache \
 
 RUN npm run build
 
-FROM ghcr.io/specsnl/php[[ .PhpVersion | replace "."  "" ]]:builder_nodejs-[[ $dockerTag ]] AS builder-base
+FROM ghcr.io/specsnl/php[[ .PhpVersion | replace "."  "" ]]:builder_nodejs-[[ .PhpDockerTag ]] AS builder-base
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -69,7 +59,7 @@ COPY --link --from=deps /var/www /var/www/
 
 FROM builder-base AS builder-local
 
-FROM ghcr.io/specsnl/php[[ .PhpVersion | replace "."  "" ]]:builder-[[ $dockerTag ]] AS prod-precompile
+FROM ghcr.io/specsnl/php[[ .PhpVersion | replace "."  "" ]]:builder-[[ .PhpDockerTag ]] AS prod-precompile
 
 ARG COMPOSER_AUTH
 
@@ -98,7 +88,7 @@ RUN php artisan package:discover --ansi \
 
 RUN chown -R www-data: /var/www/storage /var/www/bootstrap/cache
 
-FROM ghcr.io/specsnl/php[[ .PhpVersion | replace "."  "" ]]:runtime-[[ $dockerTag ]] AS runtime
+FROM ghcr.io/specsnl/php[[ .PhpVersion | replace "."  "" ]]:runtime-[[ .PhpDockerTag ]] AS runtime
 
 COPY --link app/ /var/www/app/
 COPY --link config/ /var/www/config/

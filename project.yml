@@ -35,6 +35,12 @@ computed:
     [[ .ProjectShortName | toSnakeCase ]]
   DbPassword: password
 
+  Php85DockerTag: "0.5.3" # Latest version: https://github.com/specsnl/php85/releases/latest
+  Php84DockerTag: "1.5.3" # Latest version: https://github.com/specsnl/php84/releases/latest
+  Php83DockerTag: "1.8.3" # Latest version: https://github.com/specsnl/php83/releases/latest
+  PhpDockerTag: >-
+    [[ eq .PhpVersion "8.4" | ternary .Php84DockerTag (eq .PhpVersion "8.3" | ternary .Php83DockerTag .Php85DockerTag) ]]
+
 hooks:
   post-use:
     - task md:fixstyle

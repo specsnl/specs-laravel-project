@@ -1,13 +1,3 @@
-[[ $dockerTag := "" ]]
-
-[[- if eq .PhpVersion "8.4" ]]
-    [[- $dockerTag = "1.5.2" ]]
-[[- else if eq .PhpVersion "8.3" ]]
-    [[- $dockerTag = "1.8.2" ]]
-[[- else ]]
-    [[- $dockerTag = "0.5.2" ]]
-[[- end -]]
-
 secrets:
   composer_auth:
     file: ${COMPOSER_AUTH_FILE:-./auth.json}
@@ -16,7 +6,7 @@ services:
   php-exec:
     user: ${FIXUID:-1000}:${FIXGID:-1000}
     entrypoint: ["fixuid", "-q"]
-    image: ghcr.io/specsnl/php[[ .PhpVersion | replace "."  "" ]]:builder_nodejs-[[ $dockerTag ]]
+    image: ghcr.io/specsnl/php[[ .PhpVersion | replace "."  "" ]]:builder_nodejs-[[ .PhpDockerTag ]]
     profiles: [exec]
     environment:
       COREPACK_DEFAULT_TO_LATEST: 0

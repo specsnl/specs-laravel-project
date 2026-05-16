@@ -31,7 +31,7 @@ updates:
     groups:
       specsnl-actions:
         patterns:
-          - specsnl/github-actions
+          - "specsnl/github-actions*"
   - package-ecosystem: docker
     directory: /nginx
     schedule:

@@ -103,6 +103,17 @@
             "dealerdirect/phpcodesniffer-composer-installer": true,
             "php-http/discovery": true,
             "phpstan/extension-installer": true
+        },
+        "policy": {
+            "advisories": {
+                "audit": "report"
+            },
+            "abandoned": {
+                "audit": "report"
+            },
+            "malware": {
+                "audit": "fail"
+            }
         }
     },
     "minimum-stability": "stable",

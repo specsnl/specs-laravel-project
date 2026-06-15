@@ -6,6 +6,9 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    ignore:
+      - dependency-name: laravel/framework
+        update-types: [version-update:semver-major]
     labels:
       - dependencies
       - php

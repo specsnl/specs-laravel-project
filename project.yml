@@ -23,6 +23,8 @@ computed:
   DockerDbPort: >-
     [[ eq .Database "postgres" | ternary "5432" "3306" ]]
 
+  DbOrbStackDomain: >-
+    db.[[ .ProjectShortName | toKebabCase ]].local
   DbLabel: >-
     [[ eq .Database "postgres" | ternary "PostgreSQL" "MariaDB" ]]
   DbConnection: >-

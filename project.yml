@@ -23,6 +23,8 @@ computed:
   DockerDbPort: >-
     [[ eq .Database "postgres" | ternary "5432" "3306" ]]
 
+  DbLabel: >-
+    [[ eq .Database "postgres" | ternary "PostgreSQL" "MariaDB" ]]
   DbConnection: >-
     [[ eq .Database "postgres" | ternary "pgsql" "mariadb" ]]
   DbHost: >-

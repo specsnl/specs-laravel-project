@@ -9,6 +9,12 @@ services:
     ports:
       - ${DOCKER_POSTGRES_PORT:-5432}:5432
 
+[[- else if eq .Database "mysql" ]]
+
+  mysql:
+    ports:
+      - ${DOCKER_MYSQL_PORT:-3306}:3306
+
 [[- else ]]
 
   mariadb:

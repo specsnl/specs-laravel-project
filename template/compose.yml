@@ -67,6 +67,17 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     labels:
       - dev.orbstack.domains=[[ .DbOrbStackDomain ]]
+[[- else if eq .Database "mysql" ]]
+
+  mysql:
+    image: mysql:8.4.9
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    labels:
+      - dev.orbstack.domains=[[ .DbOrbStackDomain ]]
 [[- else ]]
 
   mariadb:

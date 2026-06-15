@@ -17,6 +17,7 @@ IssuePrefix: ACME
 Database:
   - postgres
   - mariadb
+  - mysql
 AddBugSnag: false
 
 computed:
@@ -26,9 +27,9 @@ computed:
   DbOrbStackDomain: >-
     db.[[ .ProjectShortName | toKebabCase ]].local
   DbLabel: >-
-    [[ eq .Database "postgres" | ternary "PostgreSQL" "MariaDB" ]]
+    [[ eq .Database "postgres" | ternary "PostgreSQL" (eq .Database "mysql" | ternary "MySQL" "MariaDB") ]]
   DbConnection: >-
-    [[ eq .Database "postgres" | ternary "pgsql" "mariadb" ]]
+    [[ eq .Database "postgres" | ternary "pgsql" (eq .Database "mysql" | ternary "mysql" "mariadb") ]]
   DbHost: >-
     [[ .Database ]]
   DbPort: >-

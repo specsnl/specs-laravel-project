@@ -30,7 +30,7 @@ running.
 |-------------------|-------------------------|----------------------------|
 | Application url   | <http://localhost:8080> | <https://[[ .ProjectShortName | toKebabCase ]].local>      |
 | Mailpit url       | <http://localhost:8025> | <https://mail.[[ .ProjectShortName | toKebabCase ]].local> |
-| [[ eq .Database "postgres" | ternary "PostgreSQL" "MariaDB" ]] host port | `localhost:[[ .DockerDbPort ]]`        | `db.[[ .ProjectShortName | toKebabCase ]].local`          |
+| [[ .DbLabel ]] host port | `localhost:[[ .DockerDbPort ]]`        | `[[ .DbOrbStackDomain ]]`          |
 | Redis host port   | `localhost:6379`        | `redis.[[ .ProjectShortName | toKebabCase ]].local`       |
 
 > [!TIP]

@@ -6,7 +6,7 @@ services:
   php-exec:
     user: ${FIXUID:-1000}:${FIXGID:-1000}
     entrypoint: ["fixuid", "-q"]
-    image: ghcr.io/specsnl/php[[ .PhpVersion | replace "."  "" ]]:builder_nodejs-[[ .PhpDockerTag ]]
+    image: ghcr.io/specsnl/php[[ .PhpVersion | replace "."  "" ]]/builder_nodejs:[[ .PhpDockerTag ]]
     profiles: [exec]
     environment:
       COREPACK_DEFAULT_TO_LATEST: 0
@@ -60,7 +60,7 @@ services:
 [[- if eq .Database "postgres" ]]
 
   postgres:
-    image: postgres:18.3-trixie
+    image: postgres:18.4-trixie
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
@@ -97,7 +97,7 @@ services:
       - dev.orbstack.domains=redis.[[ .ProjectShortName | toKebabCase ]].local
 
   mailpit:
-    image: axllent/mailpit:v1.29.7
+    image: axllent/mailpit:v1.30.2
     labels:
       - dev.orbstack.domains=mail.[[ .ProjectShortName | toKebabCase ]].local
       - dev.orbstack.http-port=8025

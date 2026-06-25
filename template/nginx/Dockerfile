@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM ghcr.io/specsnl/php[[ .PhpVersion | replace "."  "" ]]:builder_nodejs-[[ .PhpDockerTag ]] AS deps
+FROM ghcr.io/specsnl/php[[ .PhpVersion | replace "."  "" ]]/builder_nodejs:[[ .PhpDockerTag ]] AS deps
 
 COPY --link ./composer.json ./composer.lock /var/www/
 
@@ -20,7 +20,7 @@ COPY --link ./ /var/www/
 RUN npm run build
 
 # https://hub.docker.com/_/alpine
-FROM alpine:3.23.4 AS files
+FROM alpine:3.23.5 AS files
 
 COPY --link ./nginx/files /files/
 COPY --link --from=deps /var/www/public/ /files/var/www/public/
@@ -28,7 +28,7 @@ COPY --link --from=deps /var/www/public/ /files/var/www/public/
 RUN chmod -R go-w /files/var/www/public
 
 # https://hub.docker.com/_/nginx
-FROM nginx:1.31.0-alpine3.23-slim
+FROM nginx:1.31.2-alpine3.23-slim
 
 ARG NGINX_PUBLIC_DIR=/var/www/public
 ENV NGINX_PUBLIC_DIR $NGINX_PUBLIC_DIR

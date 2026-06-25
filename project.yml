@@ -49,3 +49,5 @@ computed:
 hooks:
   post-use:
     - task md:fixstyle
+    - git init
+    - git add .

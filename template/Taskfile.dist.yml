@@ -7,7 +7,6 @@ vars:
   ORBSTACK_ENABLED:
     sh: test "$(docker context show)" = "orbstack" && echo 1 || echo 0
   ORB_APP_HOST: https://[[ .ProjectShortName | toKebabCase ]].local
-  DOCKER_CACHE_VOLUMES: [ [[ .ProjectShortName | toSnakeCase ]]_cache ]
 
 # env:
 #   BUILDKIT_PROGRESS: plain
@@ -32,7 +31,6 @@ tasks:
       FIXGID:
         sh: echo ${FIXGID:-$(id -g)}
     cmds:
-      - task: setup:create:volumes
       - >-
         FIXUID={{ .FIXUID }} FIXGID={{ .FIXGID }}
         docker compose

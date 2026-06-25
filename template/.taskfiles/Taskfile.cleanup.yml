@@ -18,13 +18,6 @@ tasks:
         --exclude .idea
         --exclude /auth.json
 
-  volumes:
-    desc: Cleanup docker compose named volumes
-    cmds:
-      - task: :down
-      - for: { var: DOCKER_CACHE_VOLUMES }
-        cmd: docker volume rm {{ .ITEM }} > /dev/null || true
-
   all:
     desc: Cleanup of almost all gitignored files, untracked files and dev containers
     summary: |
@@ -34,7 +27,7 @@ tasks:
         - /.idea
         - /auth.json
     cmds:
-      - task: volumes
+      - task: :down
       - task: files
 
   auth:

@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM ghcr.io/specsnl/php[[ .PhpVersion | replace "."  "" ]]:builder_nodejs-[[ .PhpDockerTag ]] AS deps
+FROM ghcr.io/specsnl/php[[ .PhpVersion | replace "."  "" ]]/builder_nodejs:[[ .PhpDockerTag ]] AS deps
 
 COPY --link ./composer.json ./composer.lock /var/www/
 

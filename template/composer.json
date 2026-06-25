@@ -73,7 +73,8 @@
             "@checkstyle",
             "@checktype",
             "@test",
-            "@rector-dry"
+            "@rector-dry",
+            "composer audit"
         ],
         "test": [
             "Composer\\Config::disableProcessTimeout",

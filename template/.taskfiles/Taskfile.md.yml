@@ -2,6 +2,7 @@
 version: '3.50'
 
 tasks:
+
   checkstyle:
     desc: Check style of Markdown files
     cmds:
@@ -20,6 +21,7 @@ tasks:
   fix-tables:
     desc: Fix table spacing in markdown files
     cmds:
+      - task: :setup:auth
       - task: :dc:run:php-exec
         vars:
           SUB_CMD: bash -c "shopt -s globstar && npx --yes markdown-table-formatter **/*.md"

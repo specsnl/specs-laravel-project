@@ -2,6 +2,7 @@
 version: '3.50'
 
 tasks:
+
   migrate:*:
     desc: Run migrations
     vars:

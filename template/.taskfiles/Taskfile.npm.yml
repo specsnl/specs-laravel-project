@@ -2,7 +2,32 @@
 version: '3.50'
 
 tasks:
-  do:*:
+
+  install:
+    desc: Install node dependencies
+    cmds:
+      - task: cmd:ci
+        vars:
+          SUB_CMD: '--no-fund'
+
+  update:
+    desc: Update node dependencies
+    cmds:
+      - task: :setup:auth
+      - task: :dc:run:php-exec
+        vars:
+          SUB_CMD: 'npm update'
+
+  corepack:update:
+    aliases: [ corepack:up ]
+    desc: Run corepack up
+    cmds:
+      - task: :dc:run:php
+        vars:
+          SUB_CMD: 'corepack up'
+          CLI_ARGS: '{{ .CLI_ARGS }}'
+
+  cmd:*:
     desc: Run a NPM command inside the php service
     vars:
       NPM_CMD: '{{ index .MATCH 0 }}'
@@ -12,31 +37,12 @@ tasks:
           SUB_CMD: 'npm {{ .NPM_CMD }} {{ .SUB_CMD }}'
           CLI_ARGS: '{{ .CLI_ARGS }}'
 
-  install:
-    desc: Install node dependencies
-    cmds:
-      - task: do:ci
-
-  update:
-    desc: Update node dependencies
-    cmds:
-      - task: :dc:run:php-exec
-        vars:
-          SUB_CMD: 'npm update'
-
-  run:*:
+  script:*:
     desc: Run a NPM script
     vars:
       SCRIPT: '{{ index .MATCH 0 }}'
     cmds:
-      - task: do:run
-        vars: { SUB_CMD: '{{ .SCRIPT }}' }
-
-  corepack:update:
-    aliases: [corepack:up]
-    desc: Run corepack up
-    cmds:
-      - task: :dc:run:php
+      - task: cmd:run
         vars:
-          SUB_CMD: 'corepack up'
-          CLI_ARGS: '{{ .CLI_ARGS }}'
+          SUB_CMD: '{{ .SCRIPT }}'
+          CLI_ARGS: '-- {{ .CLI_ARGS }}'

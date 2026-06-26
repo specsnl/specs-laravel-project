@@ -2,6 +2,7 @@
 version: '3.50'
 
 tasks:
+
   files:
     desc: Cleanup of almost all gitignored files and untracked files
     prompt: This could potentially delete untracked files!! Do you want to continue?
@@ -32,6 +33,7 @@ tasks:
 
   auth:
     desc: Delete the local auth.json file.
+    run: once
     status:
       - test ! -f auth.json
       - test ! -d auth.json

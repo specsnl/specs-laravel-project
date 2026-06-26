@@ -23,6 +23,7 @@ includes:
   cleanup: .taskfiles/Taskfile.cleanup.yml
 
 tasks:
+
   dc:
     internal: true
     vars:
@@ -41,33 +42,35 @@ tasks:
         {{ end }}
         {{ .SUB_CMD }} {{ .CLI_ARGS }}
 
-  dc:run:php-exec:
-    cmds:
-      - task: setup:auth
-      - task: dc
-        vars:
-          SUB_CMD: 'run --rm --user $(id -u):$(id -g) php-exec {{ .SUB_CMD }}'
-          CLI_ARGS: '{{ .CLI_ARGS }}'
-
   dc:run:*:
     interactive: true
     vars:
       SERVICE: '{{ index .MATCH 0 }}'
+      RUN_FLAGS: '{{ .RUN_FLAGS | default "" }}'
+      USER_FLAG: '{{ (ne (.NON_ROOT | default "true") "false") | ternary " --user $(id -u):$(id -g)" "" }}'
+      COMPOSE_SERVICES:
+        sh: COMPOSE_PROFILES="*" docker compose config --services
     cmds:
       - task: dc
         vars:
-          SUB_CMD: 'run --rm --user $(id -u):$(id -g) {{ .SERVICE }} {{ .SUB_CMD }}'
+          SUB_CMD: 'run --rm {{ .RUN_FLAGS }} {{ .USER_FLAG }} {{ .SERVICE }} {{ .SUB_CMD }}'
           CLI_ARGS: '{{ .CLI_ARGS }}'
+    requires:
+      vars:
+        - name: SERVICE
+          enum:
+            ref: .COMPOSE_SERVICES | splitLines | compact
 
-  dc:build:
+  build:
     desc: Build all docker images
-    deps: [setup:env-file:local]
+    deps: [ setup:env-file:local ]
     preconditions:
       - sh: test -f auth.json
         msg: Create an auth.json file by running "task setup:auth".
     cmds:
       - task: dc
-        vars: { SUB_CMD: 'build --build-arg USER_UID=$(id -u) --build-arg USER_GID=$(id -g)' }
+        vars:
+          SUB_CMD: 'build --build-arg USER_UID=$(id -u) --build-arg USER_GID=$(id -g)'
 
   up:
     desc: Start development environment
@@ -76,13 +79,15 @@ tasks:
       - task: setup:env-file:testing
       - task: setup:if-not-exist
       - task: dc
-        vars: { SUB_CMD: 'up -d' }
+        vars:
+          SUB_CMD: 'up -d'
 
   stop:
     desc: Stop development environment
     cmds:
       - task: dc
-        vars: { SUB_CMD: "stop" }
+        vars:
+          SUB_CMD: 'stop'
 
   restart:
     desc: Restart development environment
@@ -94,7 +99,8 @@ tasks:
     desc: Down the development environment
     cmds:
       - task: dc
-        vars: { SUB_CMD: 'down --volumes --remove-orphans' }
+        vars:
+          SUB_CMD: 'down --volumes --remove-orphans'
 
   reset:
     desc: Reset the development environment
@@ -104,16 +110,18 @@ tasks:
 
   ps:
     desc: Show all project container (including stopped ones)
-    aliases: [status]
+    aliases: [ status ]
     cmds:
       - task: dc
-        vars: { SUB_CMD: 'ps -a' }
+        vars:
+          SUB_CMD: 'ps -a'
 
   logs:
     desc: Show logs of all project containers
     cmds:
       - task: dc
-        vars: { SUB_CMD: 'logs -f' }
+        vars:
+          SUB_CMD: 'logs -f'
 
   shell:
     desc: Open a bash shell to the php service
@@ -132,8 +140,9 @@ tasks:
   checkall:
     desc: Run all checks
     cmds:
-      - task: composer:run:checkall
-        vars: { CLI_ARGS: '' }
+      - task: composer:script:checkall
+        vars:
+          CLI_ARGS: ''
       - task: md:checkstyle
 
   refresh:
@@ -146,4 +155,4 @@ tasks:
       # We are only adding new migrations and not running migrate:refresh so we don't lose our data for the dev environment:
       - task: db:migrate:local
       - task: db:migrate-fresh:testing
-      - task: npm:run:build
+      - task: npm:script:build

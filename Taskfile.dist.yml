@@ -5,15 +5,15 @@ silent: true
 
 vars:
   SPECS_TEMPLATE_NAME: laravel-13-project
-  SPECS_TEMPLATE_TEST_NAME: "{{.SPECS_TEMPLATE_NAME}}-test"
+  SPECS_TEMPLATE_TEST_NAME: '{{ .SPECS_TEMPLATE_NAME }}-test'
 
 tasks:
 
   update:
     desc: Update the specs template
-    deps: [cleanup:ignored]
+    deps: [ cleanup:ignored ]
     cmds:
-      - specs template save . "{{.SPECS_TEMPLATE_NAME}}" --force
+      - specs template save . "{{ .SPECS_TEMPLATE_NAME }}" --force
 
   cleanup:ignored:
     desc: Remove all git ignored files
@@ -34,37 +34,37 @@ tasks:
 
   test:
     desc: Test the specs template
-    deps: [cleanup:ignored, test:cleanup]
+    deps: [ cleanup:ignored, test:cleanup ]
     cmds:
-      - specs template save . "{{.SPECS_TEMPLATE_TEST_NAME}}" --force
-      - specs template use "{{.SPECS_TEMPLATE_TEST_NAME}}" "../{{.SPECS_TEMPLATE_TEST_NAME}}" --use-defaults
-      - git -C "../{{.SPECS_TEMPLATE_TEST_NAME}}" commit -m "Initial commit"
-      - git -C "../{{.SPECS_TEMPLATE_TEST_NAME}}" remote add origin git@github.com:specsnl/laravel-project-test.git
-      - git -C "../{{.SPECS_TEMPLATE_TEST_NAME}}" fetch
-      - git -C "../{{.SPECS_TEMPLATE_TEST_NAME}}" branch --set-upstream-to=origin/main main
-      - code "../{{.SPECS_TEMPLATE_TEST_NAME}}"
+      - specs template save . "{{ .SPECS_TEMPLATE_TEST_NAME }}" --force
+      - specs template use "{{ .SPECS_TEMPLATE_TEST_NAME }}" "../{{ .SPECS_TEMPLATE_TEST_NAME }}" --use-defaults
+      - git -C "../{{ .SPECS_TEMPLATE_TEST_NAME }}" commit -m "Initial commit"
+      - git -C "../{{ .SPECS_TEMPLATE_TEST_NAME }}" remote add origin git@github.com:specsnl/laravel-project-test.git
+      - git -C "../{{ .SPECS_TEMPLATE_TEST_NAME }}" fetch
+      - git -C "../{{ .SPECS_TEMPLATE_TEST_NAME }}" branch --set-upstream-to=origin/main main
+      - code "../{{ .SPECS_TEMPLATE_TEST_NAME }}"
 
   test:interactive:
     desc: Test the specs template interactivly
-    deps: [cleanup:ignored, test:cleanup]
+    deps: [ cleanup:ignored, test:cleanup ]
     interactive: true
     cmds:
-      - specs template save . "{{.SPECS_TEMPLATE_TEST_NAME}}" --force
-      - specs template use "{{.SPECS_TEMPLATE_TEST_NAME}}" "../{{.SPECS_TEMPLATE_TEST_NAME}}"
-      - git -C "../{{.SPECS_TEMPLATE_TEST_NAME}}" init
-      - git -C "../{{.SPECS_TEMPLATE_TEST_NAME}}" add .
-      - git -C "../{{.SPECS_TEMPLATE_TEST_NAME}}" commit -m "Initial commit"
-      - git -C "../{{.SPECS_TEMPLATE_TEST_NAME}}" remote add origin git@github.com:specsnl/laravel-project-test.git
-      - git -C "../{{.SPECS_TEMPLATE_TEST_NAME}}" fetch
-      - git -C "../{{.SPECS_TEMPLATE_TEST_NAME}}" branch --set-upstream-to=origin/main main
-      - code "../{{.SPECS_TEMPLATE_TEST_NAME}}"
+      - specs template save . "{{ .SPECS_TEMPLATE_TEST_NAME }}" --force
+      - specs template use "{{ .SPECS_TEMPLATE_TEST_NAME }}" "../{{ .SPECS_TEMPLATE_TEST_NAME }}"
+      - git -C "../{{ .SPECS_TEMPLATE_TEST_NAME }}" init
+      - git -C "../{{ .SPECS_TEMPLATE_TEST_NAME }}" add .
+      - git -C "../{{ .SPECS_TEMPLATE_TEST_NAME }}" commit -m "Initial commit"
+      - git -C "../{{ .SPECS_TEMPLATE_TEST_NAME }}" remote add origin git@github.com:specsnl/laravel-project-test.git
+      - git -C "../{{ .SPECS_TEMPLATE_TEST_NAME }}" fetch
+      - git -C "../{{ .SPECS_TEMPLATE_TEST_NAME }}" branch --set-upstream-to=origin/main main
+      - code "../{{ .SPECS_TEMPLATE_TEST_NAME }}"
 
   test:cleanup:
     desc: Cleanup specs template test files
     dir: ..
     status:
-       - test ! -d "{{.SPECS_TEMPLATE_TEST_NAME}}"
+       - test ! -d "{{ .SPECS_TEMPLATE_TEST_NAME }}"
     cmds:
-      - cd "{{.SPECS_TEMPLATE_TEST_NAME}}" && task down && task down
-      - rm -rf "{{.SPECS_TEMPLATE_TEST_NAME}}"
-      - specs template delete "{{.SPECS_TEMPLATE_TEST_NAME}}"
+      - cd "{{ .SPECS_TEMPLATE_TEST_NAME }}" && task down && task down
+      - rm -rf "{{ .SPECS_TEMPLATE_TEST_NAME }}"
+      - specs template delete "{{ .SPECS_TEMPLATE_TEST_NAME }}"

@@ -2,6 +2,7 @@
 version: '3.50'
 
 tasks:
+
   run:*:
     desc: Run an artisan command inside the php service
     interactive: true

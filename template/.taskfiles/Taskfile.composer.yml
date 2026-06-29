@@ -2,7 +2,24 @@
 version: '3.50'
 
 tasks:
-  do:*:
+
+  install:
+    desc: Install composer dependencies
+    preconditions:
+      - sh: test -f auth.json
+        msg: 'Missing auth.json file. Please run task setup:auth!'
+    cmds:
+      - task: cmd:install
+
+  update:
+    desc: Install composer dependencies (including all dependencies)
+    cmds:
+      - task: :setup:auth
+      - task: :dc:run:php-exec
+        vars:
+          SUB_CMD: 'composer update --with-all-dependencies'
+
+  cmd:*:
     desc: Run a composer command inside the php service
     vars:
       COMPOSER_CMD: '{{ index .MATCH 0 }}'
@@ -12,31 +29,12 @@ tasks:
           SUB_CMD: 'composer {{ .COMPOSER_CMD }} {{ .SUB_CMD }}'
           CLI_ARGS: '{{ .CLI_ARGS }}'
 
-  install:
-    desc: Install composer dependencies
-    preconditions:
-      - sh: test -f auth.json
-        msg: 'Missing auth.json file. Please run task setup:auth!'
-    cmds:
-      - task: do:install
-
-  update:
-    desc: Install composer dependencies (including all dependencies)
-    cmds:
-      - task: :dc:run:php-exec
-        vars:
-          SUB_CMD: 'composer update --with-all-dependencies'
-
-  validate:
-    desc: Validate composer.json
-    cmds:
-      - task: do:validate
-
-  run:*:
+  script:*:
     desc: Run a composer script
     vars:
       SCRIPT: '{{ index .MATCH 0 }}'
     cmds:
-      - task: do:run
+      - task: cmd:run
         vars:
           SUB_CMD: '{{ .SCRIPT }}'
+          CLI_ARGS: '-- {{ .CLI_ARGS }}'

@@ -23,6 +23,12 @@ return RectorConfig::configure()
         __DIR__ . '/bootstrap/cache',
         __DIR__ . '/config/ide-helper.php',
     ])
+    ->withPHPStanConfigs([
+        __DIR__ . '/vendor/larastan/larastan/extension.neon',
+    ])
+    ->withBootstrapFiles([
+        __DIR__ . '/vendor/larastan/larastan/bootstrap.php',
+    ])
     ->withSetProviders(LaravelSetProvider::class)
     ->withComposerBased(phpunit: true, laravel: true)
     ->withAttributesSets()

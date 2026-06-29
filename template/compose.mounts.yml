@@ -72,3 +72,10 @@ services:
   markdown-linter:
     volumes:
       - ./:/workdir
+[[- if .AddE2E ]]
+
+  e2e-playwright:
+    volumes:
+      - ./:/var/www/
+      - [[ .ProjectShortName | toSnakeCase ]]_cache:/cache
+[[- end ]]

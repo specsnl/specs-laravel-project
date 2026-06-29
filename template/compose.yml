@@ -56,6 +56,12 @@ services:
     labels:
       - dev.orbstack.domains=[[ .ProjectShortName | toKebabCase ]].local
       - dev.orbstack.http-port=80
+[[- if .AddE2E ]]
+    networks:
+      default:
+        aliases:
+          - [[ .ProjectShortName | toKebabCase ]].local
+[[- end ]]
 
 [[- if eq .Database "postgres" ]]
 
@@ -105,3 +111,14 @@ services:
   markdown-linter:
     image: davidanson/markdownlint-cli2:v0.22.1
     profiles: [markdown-lint]
+[[- if .AddE2E ]]
+
+  e2e-playwright:
+    profiles: [e2e]
+    image: mcr.microsoft.com/playwright:v1.61.0-noble
+    working_dir: /var/www
+    depends_on:
+      - nginx
+    environment:
+      BASE_URL: http://[[ .ProjectShortName | toKebabCase ]].local
+[[- end ]]

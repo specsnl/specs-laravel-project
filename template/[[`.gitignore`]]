@@ -39,6 +39,12 @@ public/js
 [[- if .AddFilament ]]
 public/fonts/filament
 [[- end ]]
+[[- if .AddE2E ]]
+/test-results
+/playwright-report
+/playwright/.cache
+/playwright/.auth
+[[- end ]]
 
 _ide_helper_models.php
 _ide_helper.php

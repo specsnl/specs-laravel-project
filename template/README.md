@@ -59,3 +59,21 @@ instance (re)fetch the composer and npm dependencies, run the migrations and reb
 #### Using Clockwork to debug the application
 
 Checkout <https://[[ .ProjectShortName | toKebabCase ]].local/clockwork> to see the [clockwork](https://underground.works/clockwork/) dashboard.
+[[- if .AddE2E ]]
+
+### End-to-end testing (Playwright)
+
+End-to-end tests live in the `e2e/` directory and run with [Playwright](https://playwright.dev/).
+
+To run them on your host, first install the browsers once with `task e2e:setup`, then:
+
+- `task e2e:test` — run the tests in the Playwright UI
+- `task e2e:test:headless` — run the tests headless
+- `task e2e:codegen` — record a test by interacting with the app
+- `task e2e:show-report` — open the last HTML report
+
+To run the suite in Docker against the running stack (as CI does), use `task e2e:docker:test`.
+
+A deterministic fixture user is available via `Database\Seeders\E2ETestSeeder`; seed it
+with `task artisan:run:db:seed -- --class='Database\Seeders\E2ETestSeeder'`.
+[[- end ]]

@@ -18,6 +18,9 @@ includes:
   artisan: .taskfiles/Taskfile.artisan.yml
   npm: .taskfiles/Taskfile.npm.yml
   db: .taskfiles/Taskfile.db.yml
+[[- if .AddE2E ]]
+  e2e: .taskfiles/Taskfile.e2e.yml
+[[- end ]]
   setup: .taskfiles/Taskfile.setup.yml
   md: .taskfiles/Taskfile.md.yml
   cleanup: .taskfiles/Taskfile.cleanup.yml
@@ -81,6 +84,25 @@ tasks:
       - task: dc
         vars:
           SUB_CMD: 'up -d'
+[[- if .AddE2E ]]
+
+  ci:up:
+    desc: Start the environment on a fresh CI runner (skips the setup:if-not-exist guard)
+    cmds:
+      - task: setup:env-file:local
+      - task: setup:env-file:testing
+      - task: composer:install
+      - task: npm:install
+      - task: dc
+        vars: { SUB_CMD: 'up -d' }
+      - task: artisan:run:key:generate
+      - task: artisan:run:storage:link
+        vars: { SUB_CMD: '--quiet' }
+      - task: dc:run:php
+        vars: { SUB_CMD: 'bash -c "wait-for-it [[ .DbHost ]]:[[ .DbPort ]] --timeout=0 --strict -- echo \"Done waiting\""' }
+      - task: db:migrate-fresh:local
+      - task: npm:script:build
+[[- end ]]
 
   stop:
     desc: Stop development environment

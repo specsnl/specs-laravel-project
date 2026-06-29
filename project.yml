@@ -3,7 +3,7 @@ __delimiters:
   right: "]]"
 
 ProjectName: My Acme Project
-ProjectShortName: acme-12
+ProjectShortName: acme
 ProjectDescription: This Laravel project is scaffolded using specsnl/specs-cli using the specsnl/specs-laravel-project.
 PhpVersion:
   - "8.5"

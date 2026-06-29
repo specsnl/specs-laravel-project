@@ -1,0 +1,39 @@
+# https://taskfile.dev
+version: '3.50'
+
+tasks:
+  setup:
+    desc: Install Playwright browsers (for running on the host)
+    aliases: [ install ]
+    cmds:
+      - rm -rf node_modules 2> /dev/null
+      - npm ci
+      - npm run test:e2e:install
+
+  test:
+    aliases: [ test:ui ]
+    desc: Run Playwright tests using the UI (host)
+    cmds:
+      - npm run test:e2e:ui
+
+  test:headless:
+    desc: Run Playwright tests headless (host)
+    cmds:
+      - npm run test:e2e
+
+  codegen:
+    desc: Playwright code-gen
+    cmds:
+      - npm run test:e2e:codegen
+
+  show-report:
+    desc: Show the Playwright test report
+    cmds:
+      - npm run test:e2e:report
+
+  docker:test:
+    desc: Run E2E tests with Playwright in Docker (against the running stack)
+    cmds:
+      - task: :dc:run:e2e-playwright
+        vars:
+          SUB_CMD: npm run test:e2e

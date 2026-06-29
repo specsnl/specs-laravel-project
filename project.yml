@@ -20,6 +20,7 @@ Database:
   - mysql
 AddBugSnag: false
 AddFilament: false
+AddE2E: false
 
 computed:
   DockerDbPort: >-

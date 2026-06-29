@@ -25,6 +25,12 @@
                 "strict_required_status_checks_policy": false,
                 "do_not_enforce_on_create": false,
                 "required_status_checks": [
+                    [[- if .AddE2E ]]
+                    {
+                        "context": "Check E2E tests",
+                        "integration_id": 15368
+                    },
+                    [[- end ]]
                     {
                         "context": "Check PR Title",
                         "integration_id": 15368

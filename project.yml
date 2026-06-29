@@ -19,6 +19,7 @@ Database:
   - mariadb
   - mysql
 AddBugSnag: false
+AddFilament: false
 
 computed:
   DockerDbPort: >-

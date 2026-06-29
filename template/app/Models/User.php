@@ -7,6 +7,10 @@ namespace App\Models;
 use Carbon\CarbonImmutable;
 use Database\Factories\UserFactory;
 use Eloquent;
+[[- if .AddFilament ]]
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
+[[- end ]]
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Builder;
@@ -44,7 +48,7 @@ use Override;
     'password',
     'remember_token',
 ])]
-class User extends Authenticatable
+class User extends Authenticatable[[ if .AddFilament ]] implements FilamentUser[[ end ]]
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory;
@@ -63,4 +67,12 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    [[- if .AddFilament ]]
+
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return true;
+    }
+    [[- end ]]
 }

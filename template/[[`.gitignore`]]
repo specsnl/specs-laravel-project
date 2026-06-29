@@ -36,6 +36,9 @@ phpstan.neon
 # Custom
 public/css
 public/js
+[[- if .AddFilament ]]
+public/fonts/filament
+[[- end ]]
 
 _ide_helper_models.php
 _ide_helper.php

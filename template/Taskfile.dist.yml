@@ -24,6 +24,7 @@ includes:
   setup: .taskfiles/Taskfile.setup.yml
   md: .taskfiles/Taskfile.md.yml
   cleanup: .taskfiles/Taskfile.cleanup.yml
+  worktrees: .taskfiles/Taskfile.worktrees.yml
 
 tasks:
 

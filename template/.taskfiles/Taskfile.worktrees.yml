@@ -1,0 +1,135 @@
+# https://taskfile.dev
+version: '3.50'
+
+vars:
+  # Canonical project name, baked in at scaffold time so it is independent of the
+  # current worktree's (patched) .env.
+  BASE_NAME: '[[ .ProjectShortName | toKebabCase ]]'
+  # The database host-port .env var name + its default value (rendered once at
+  # scaffold time, used when assigning unique ports without OrbStack).
+  DB_PORT_VAR: '[[ eq .Database "postgres" | ternary "DOCKER_POSTGRES_PORT" (eq .Database "mysql" | ternary "DOCKER_MYSQL_PORT" "DOCKER_MARIADB_PORT") ]]'
+  DB_BASE_PORT: '[[ .DockerDbPort ]]'
+  # Worktrees live in a sibling directory next to the main worktree, e.g.
+  # ../[[ .ProjectShortName | toKebabCase ]]-worktrees/<name>.
+  WORKTREE_ROOT:
+    sh: echo "$(dirname "$(git worktree list --porcelain | head -1 | cut -d' ' -f2)")/{{ .BASE_NAME }}-worktrees"
+
+tasks:
+
+  list:
+    desc: List all git worktrees
+    aliases: [ ls ]
+    cmds:
+      - git worktree list
+
+  create:
+    desc: Create an isolated worktree (own branch, .env, containers, domains and ports)
+    summary: |
+      Create a git worktree that can run its full Docker stack alongside the main
+      project without collisions.
+
+      Usage:
+        task worktrees:create NAME=my-feature          # new branch "my-feature"
+        task worktrees:create NAME=my-feature BRANCH=existing-branch
+
+      What it does:
+        - Adds a worktree at {{ .WORKTREE_ROOT }}/<slug>
+        - Generates a .env with a unique COMPOSE_PROJECT_NAME ({{ .BASE_NAME }}-<slug>),
+          which gives the worktree its own containers, network, volumes and
+          *.local OrbStack domains.
+        - Without OrbStack: also assigns unique host ports (printed at the end).
+        - Runs "task up" inside the worktree.
+
+      Note: if .env.example later changes (e.g. a project update), a subsequent
+      "task up" inside the worktree will re-copy it and reset COMPOSE_PROJECT_NAME;
+      re-run this task or re-patch .env if that happens.
+    requires:
+      vars: [ NAME ]
+    vars:
+      WT_BRANCH: '{{ .BRANCH | default .NAME }}'
+      SLUG:
+        sh: echo "{{ .NAME }}" | tr '[:upper:]' '[:lower:]' | sed -e 's#[^a-z0-9]#-#g' -e 's#--*#-#g' -e 's#^-##' -e 's#-$##'
+      PROJECT: '{{ .BASE_NAME }}-{{ .SLUG }}'
+      WT_PATH: '{{ .WORKTREE_ROOT }}/{{ .SLUG }}'
+    preconditions:
+      - sh: test -n "{{ .SLUG }}"
+        msg: 'NAME "{{ .NAME }}" produced an empty slug. Use a name containing letters or digits.'
+    cmds:
+      # 1. Create the worktree (new branch, or check out an existing one).
+      - |
+        if git show-ref --verify --quiet "refs/heads/{{ .WT_BRANCH }}"; then
+          git worktree add "{{ .WT_PATH }}" "{{ .WT_BRANCH }}"
+        else
+          git worktree add -b "{{ .WT_BRANCH }}" "{{ .WT_PATH }}"
+        fi
+      # 2. Seed the env files first. This records Task's checksum for .env.example so
+      #    the "task up" below treats env-file:local as up-to-date and does NOT
+      #    overwrite the COMPOSE_PROJECT_NAME we patch in step 3/4.
+      - task --dir "{{ .WT_PATH }}" setup:env-file:local
+      - task --dir "{{ .WT_PATH }}" setup:env-file:testing
+      # 3. Unique project name -> unique containers, network, volumes and domains.
+      - |
+        sed -e 's#^COMPOSE_PROJECT_NAME=.*#COMPOSE_PROJECT_NAME="{{ .PROJECT }}"#' \
+          "{{ .WT_PATH }}/.env" > "{{ .WT_PATH }}/.env.tmp" && mv "{{ .WT_PATH }}/.env.tmp" "{{ .WT_PATH }}/.env"
+      # 4a. OrbStack: unique *.local domain, no host ports needed.
+      - if: '[ "{{ .ORBSTACK_ENABLED }}" = "1" ]'
+        cmd: |
+          sed -e 's#^APP_URL=.*#APP_URL=https://{{ .PROJECT }}.local#' \
+            "{{ .WT_PATH }}/.env" > "{{ .WT_PATH }}/.env.tmp" && mv "{{ .WT_PATH }}/.env.tmp" "{{ .WT_PATH }}/.env"
+      # 4b. No OrbStack: assign unique host ports (deterministic offset from the slug).
+      - if: '[ "{{ .ORBSTACK_ENABLED }}" != "1" ]'
+        cmd: |
+          OFFSET=$(( $(echo -n "{{ .SLUG }}" | cksum | cut -d' ' -f1) % 1000 + 1 ))
+          NGINX_PORT=$(( 8080 + OFFSET ))
+          DB_PORT=$(( {{ .DB_BASE_PORT }} + OFFSET ))
+          REDIS_PORT=$(( 6379 + OFFSET ))
+          MAILPIT_PORT=$(( 8025 + OFFSET ))
+          sed -e "s#^DOCKER_NGINX_PORT=.*#DOCKER_NGINX_PORT=${NGINX_PORT}#" \
+              -e "s#^{{ .DB_PORT_VAR }}=.*#{{ .DB_PORT_VAR }}=${DB_PORT}#" \
+              -e "s#^DOCKER_REDIS_PORT=.*#DOCKER_REDIS_PORT=${REDIS_PORT}#" \
+              -e "s#^DOCKER_MAILPIT_PORT=.*#DOCKER_MAILPIT_PORT=${MAILPIT_PORT}#" \
+              -e "s#^APP_URL=.*#APP_URL=http://localhost:${NGINX_PORT}#" \
+            "{{ .WT_PATH }}/.env" > "{{ .WT_PATH }}/.env.tmp" && mv "{{ .WT_PATH }}/.env.tmp" "{{ .WT_PATH }}/.env"
+          echo "Assigned host ports -> nginx:${NGINX_PORT} db:${DB_PORT} redis:${REDIS_PORT} mailpit:${MAILPIT_PORT}"
+          echo "Verify these do not collide with other running worktrees."
+      # 5. Bring the worktree's stack up.
+      - task --dir "{{ .WT_PATH }}" up
+      - |
+        echo ""
+        echo "Worktree ready:"
+        echo "  path:    {{ .WT_PATH }}"
+        echo "  branch:  {{ .WT_BRANCH }}"
+        echo "  project: {{ .PROJECT }}"
+        [ "{{ .ORBSTACK_ENABLED }}" = "1" ] && echo "  url:     https://{{ .PROJECT }}.local"
+        echo ""
+        echo "Open it with: cd {{ .WT_PATH }}"
+
+  delete:
+    desc: Tear down a worktree's containers and remove the worktree
+    aliases: [ remove, rm ]
+    summary: |
+      Stops and removes the worktree's Docker stack (containers + volumes) and then
+      removes the git worktree.
+
+      Usage:
+        task worktrees:delete NAME=my-feature
+
+      The git branch is NOT deleted. Remove it separately with:
+        git branch -d <branch>
+    prompt: This tears down the worktree's containers/volumes and removes its directory. Continue?
+    requires:
+      vars: [ NAME ]
+    vars:
+      SLUG:
+        sh: echo "{{ .NAME }}" | tr '[:upper:]' '[:lower:]' | sed -e 's#[^a-z0-9]#-#g' -e 's#--*#-#g' -e 's#^-##' -e 's#-$##'
+      WT_PATH: '{{ .WORKTREE_ROOT }}/{{ .SLUG }}'
+    preconditions:
+      - sh: test -n "{{ .SLUG }}"
+        msg: 'NAME "{{ .NAME }}" produced an empty slug. Use a name containing letters or digits.'
+    cmds:
+      - if: test -d "{{ .WT_PATH }}"
+        cmd: task --dir "{{ .WT_PATH }}" down
+      # --force is required because worktrees always contain untracked files (vendor,
+      # node_modules, .env, ...). The prompt above guards against accidents.
+      - git worktree remove --force "{{ .WT_PATH }}"
+      - git worktree prune

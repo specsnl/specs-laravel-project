@@ -56,6 +56,22 @@ start the project up again.
 To refresh the project when for instance you are switching to a different branch, run `task app:refresh`. This will for
 instance (re)fetch the composer and npm dependencies, run the migrations and rebuild the front-end assets
 
+#### Working with git worktrees
+
+You can run several branches at the same time, each with its own containers, volumes and
+dependencies, using git worktrees. Every worktree gets a unique `COMPOSE_PROJECT_NAME`, so its
+containers, network, volumes and (on OrbStack) its `*.local` domains never collide with the main
+project or other worktrees.
+
+- `task worktrees:create NAME=my-feature` — create a worktree (new branch `my-feature`) in a
+  sibling directory `../[[ .ProjectShortName | toKebabCase ]]-worktrees/my-feature`, generate an
+  isolated `.env`, and bring its stack up. Pass `BRANCH=existing-branch` to check out an existing
+  branch instead. On OrbStack the app is served at `https://[[ .ProjectShortName | toKebabCase ]]-my-feature.local`;
+  without OrbStack the task prints the unique host ports it assigned.
+- `task worktrees:list` — list all worktrees.
+- `task worktrees:delete NAME=my-feature` — tear down the worktree's containers/volumes and remove
+  its directory (the git branch is kept; delete it with `git branch -d my-feature`).
+
 #### Using Clockwork to debug the application
 
 Checkout <https://[[ .ProjectShortName | toKebabCase ]].local/clockwork> to see the [clockwork](https://underground.works/clockwork/) dashboard.

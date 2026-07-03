@@ -54,13 +54,13 @@ services:
     environment:
       CGI_HOST: "php.${COMPOSE_PROJECT_NAME}_default"
     labels:
-      - dev.orbstack.domains=[[ .ProjectShortName | toKebabCase ]].local
+      - dev.orbstack.domains=${COMPOSE_PROJECT_NAME:-[[ .ProjectShortName | toKebabCase ]]}.local
       - dev.orbstack.http-port=80
 [[- if .AddE2E ]]
     networks:
       default:
         aliases:
-          - [[ .ProjectShortName | toKebabCase ]].local
+          - ${COMPOSE_PROJECT_NAME:-[[ .ProjectShortName | toKebabCase ]]}.local
 [[- end ]]
 
 [[- if eq .Database "postgres" ]]
@@ -72,7 +72,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     labels:
-      - dev.orbstack.domains=[[ .DbOrbStackDomain ]]
+      - dev.orbstack.domains=db.${COMPOSE_PROJECT_NAME:-[[ .ProjectShortName | toKebabCase ]]}.local
 [[- else if eq .Database "mysql" ]]
 
   mysql:
@@ -83,7 +83,7 @@ services:
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     labels:
-      - dev.orbstack.domains=[[ .DbOrbStackDomain ]]
+      - dev.orbstack.domains=db.${COMPOSE_PROJECT_NAME:-[[ .ProjectShortName | toKebabCase ]]}.local
 [[- else ]]
 
   mariadb:
@@ -94,18 +94,18 @@ services:
       MARIADB_USER: ${MARIADB_USER}
       MARIADB_PASSWORD: ${MARIADB_PASSWORD}
     labels:
-      - dev.orbstack.domains=[[ .DbOrbStackDomain ]]
+      - dev.orbstack.domains=db.${COMPOSE_PROJECT_NAME:-[[ .ProjectShortName | toKebabCase ]]}.local
 [[- end ]]
 
   redis:
     image: redis:7.4.9-bookworm
     labels:
-      - dev.orbstack.domains=redis.[[ .ProjectShortName | toKebabCase ]].local
+      - dev.orbstack.domains=redis.${COMPOSE_PROJECT_NAME:-[[ .ProjectShortName | toKebabCase ]]}.local
 
   mailpit:
     image: axllent/mailpit:v1.30.2
     labels:
-      - dev.orbstack.domains=mail.[[ .ProjectShortName | toKebabCase ]].local
+      - dev.orbstack.domains=mail.${COMPOSE_PROJECT_NAME:-[[ .ProjectShortName | toKebabCase ]]}.local
       - dev.orbstack.http-port=8025
 
   markdown-linter:
@@ -120,5 +120,5 @@ services:
     depends_on:
       - nginx
     environment:
-      BASE_URL: http://[[ .ProjectShortName | toKebabCase ]].local
+      BASE_URL: http://${COMPOSE_PROJECT_NAME:-[[ .ProjectShortName | toKebabCase ]]}.local
 [[- end ]]

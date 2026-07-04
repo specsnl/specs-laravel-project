@@ -70,12 +70,12 @@ tasks:
       # 3. Unique project name -> unique containers, network, volumes and domains.
       - |
         sed -e 's#^COMPOSE_PROJECT_NAME=.*#COMPOSE_PROJECT_NAME="{{ .PROJECT }}"#' \
-          "{{ .WT_PATH }}/.env" > "{{ .WT_PATH }}/.env.tmp" && mv "{{ .WT_PATH }}/.env.tmp" "{{ .WT_PATH }}/.env"
+          "{{ .WT_PATH }}/.env" > "{{ .WT_PATH }}/.env.tmp" && mv -f "{{ .WT_PATH }}/.env.tmp" "{{ .WT_PATH }}/.env"
       # 4a. OrbStack: unique *.local domain, no host ports needed.
       - if: '[ "{{ .ORBSTACK_ENABLED }}" = "1" ]'
         cmd: |
           sed -e 's#^APP_URL=.*#APP_URL=https://{{ .PROJECT }}.local#' \
-            "{{ .WT_PATH }}/.env" > "{{ .WT_PATH }}/.env.tmp" && mv "{{ .WT_PATH }}/.env.tmp" "{{ .WT_PATH }}/.env"
+            "{{ .WT_PATH }}/.env" > "{{ .WT_PATH }}/.env.tmp" && mv -f "{{ .WT_PATH }}/.env.tmp" "{{ .WT_PATH }}/.env"
       # 4b. No OrbStack: assign unique host ports (deterministic offset from the slug).
       - if: '[ "{{ .ORBSTACK_ENABLED }}" != "1" ]'
         cmd: |
@@ -89,7 +89,7 @@ tasks:
               -e "s#^DOCKER_REDIS_PORT=.*#DOCKER_REDIS_PORT=${REDIS_PORT}#" \
               -e "s#^DOCKER_MAILPIT_PORT=.*#DOCKER_MAILPIT_PORT=${MAILPIT_PORT}#" \
               -e "s#^APP_URL=.*#APP_URL=http://localhost:${NGINX_PORT}#" \
-            "{{ .WT_PATH }}/.env" > "{{ .WT_PATH }}/.env.tmp" && mv "{{ .WT_PATH }}/.env.tmp" "{{ .WT_PATH }}/.env"
+            "{{ .WT_PATH }}/.env" > "{{ .WT_PATH }}/.env.tmp" && mv -f "{{ .WT_PATH }}/.env.tmp" "{{ .WT_PATH }}/.env"
           echo "Assigned host ports -> nginx:${NGINX_PORT} db:${DB_PORT} redis:${REDIS_PORT} mailpit:${MAILPIT_PORT}"
           echo "Verify these do not collide with other running worktrees."
       # 5. Bring the worktree's stack up.

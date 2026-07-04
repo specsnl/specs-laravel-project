@@ -43,8 +43,8 @@ computed:
   DbPassword: password
 
   Php85DockerTag: "0.5.6" # Latest version: https://github.com/specsnl/php85/releases/latest
-  Php84DockerTag: "1.5.6" # Latest version: https://github.com/specsnl/php84/releases/latest
-  Php83DockerTag: "1.8.6" # Latest version: https://github.com/specsnl/php83/releases/latest
+  Php84DockerTag: "1.5.7" # Latest version: https://github.com/specsnl/php84/releases/latest
+  Php83DockerTag: "1.8.7" # Latest version: https://github.com/specsnl/php83/releases/latest
   PhpDockerTag: >-
     [[ eq .PhpVersion "8.4" | ternary .Php84DockerTag (eq .PhpVersion "8.3" | ternary .Php83DockerTag .Php85DockerTag) ]]
 

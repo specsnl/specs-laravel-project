@@ -103,6 +103,8 @@ tasks:
         [ "{{ .ORBSTACK_ENABLED }}" = "1" ] && echo "  url:     https://{{ .PROJECT }}.local"
         echo ""
         echo "Open it with: cd {{ .WT_PATH }}"
+      - if: test -n "$VISUAL"
+        cmd: $VISUAL {{ .WT_PATH }}
 
   delete:
     desc: Tear down a worktree's containers and remove the worktree

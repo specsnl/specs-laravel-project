@@ -42,7 +42,7 @@ computed:
     [[ .ProjectShortName | toSnakeCase ]]
   DbPassword: password
 
-  Php85DockerTag: "0.5.6" # Latest version: https://github.com/specsnl/php85/releases/latest
+  Php85DockerTag: "0.5.7" # Latest version: https://github.com/specsnl/php85/releases/latest
   Php84DockerTag: "1.5.7" # Latest version: https://github.com/specsnl/php84/releases/latest
   Php83DockerTag: "1.8.7" # Latest version: https://github.com/specsnl/php83/releases/latest
   PhpDockerTag: >-

@@ -36,7 +36,9 @@ updates:
         patterns:
           - "specsnl/github-actions*"
   - package-ecosystem: docker
-    directory: /nginx
+    directories:
+      - /php
+      - /nginx
     schedule:
       interval: weekly
     ignore:
@@ -45,10 +47,7 @@ updates:
     labels:
       - dependencies
       - docker
-  - package-ecosystem: docker
-    directory: /php
-    schedule:
-      interval: weekly
-    labels:
-      - dependencies
-      - docker
+    groups:
+      specsnl-php-images:
+        patterns:
+          - "specsnl/php*"

@@ -53,3 +53,4 @@ _ide_helper.php
 # Agents
 CLAUDE.md
 AGENTS.md
+/.playwright-mcp

@@ -1,5 +1,5 @@
 volumes:
-  [[ .ProjectShortName |toSnakeCase ]]_cache:
+  cache:
   [[ eq .Database "postgres" | ternary "postgres_data:" (eq .Database "mysql" | ternary "mysql_data:" "mariadb_data:") ]]
 
 services:
@@ -13,7 +13,7 @@ services:
         mkdir -p /cache/node
         chown -R ${FIXUID:-1000}:${FIXGID:-1000} /cache
     volumes:
-      - [[ .ProjectShortName | toSnakeCase ]]_cache:/cache
+      - cache:/cache
 
   php-exec:
     depends_on:
@@ -21,7 +21,7 @@ services:
         condition: service_completed_successfully
     volumes:
       - ./:/var/www/
-      - [[ .ProjectShortName | toSnakeCase ]]_cache:/cache
+      - cache:/cache
       - ./auth.json:/config/composer/auth.json:ro
 
   php:
@@ -30,7 +30,7 @@ services:
         condition: service_completed_successfully
     volumes:
       - ./:/var/www/
-      - [[ .ProjectShortName | toSnakeCase ]]_cache:/cache
+      - cache:/cache
       - ./auth.json:/config/composer/auth.json:ro
 
   worker:
@@ -39,7 +39,7 @@ services:
         condition: service_completed_successfully
     volumes:
       - ./:/var/www/
-      - [[ .ProjectShortName | toSnakeCase ]]_cache:/cache
+      - cache:/cache
       - ./auth.json:/config/composer/auth.json:ro
 
   nginx:
@@ -77,5 +77,5 @@ services:
   e2e-playwright:
     volumes:
       - ./:/var/www/
-      - [[ .ProjectShortName | toSnakeCase ]]_cache:/cache
+      - cache:/cache
 [[- end ]]

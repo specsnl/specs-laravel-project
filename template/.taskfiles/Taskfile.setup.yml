@@ -10,7 +10,7 @@ tasks:
       PROJECT_EXISTS:
         sh: 'docker compose ps --all --services'
     status:
-      - test ! -z "{{ .PROJECT_EXISTS }}"
+      - test -n "{{ .PROJECT_EXISTS }}"
     cmds:
       - task: do
 

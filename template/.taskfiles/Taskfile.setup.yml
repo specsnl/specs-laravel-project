@@ -8,7 +8,7 @@ tasks:
     internal: true
     vars:
       PROJECT_EXISTS:
-        sh: 'docker compose ps --all --services'
+        sh: 'docker compose ps --all --services php'
     status:
       - test -n "{{ .PROJECT_EXISTS }}"
     cmds:

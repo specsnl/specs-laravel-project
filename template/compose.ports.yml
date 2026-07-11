@@ -23,10 +23,6 @@ services:
 
 [[- end ]]
 
-  redis:
-    ports:
-      - ${DOCKER_REDIS_PORT:-6379}:6379
-
   mailpit:
     ports:
       - ${DOCKER_MAILPIT_PORT:-8025}:8025

@@ -126,3 +126,8 @@ services:
     environment:
       BASE_URL: http://${COMPOSE_PROJECT_NAME:-[[ .ProjectShortName | toKebabCase ]]}.local
 [[- end ]]
+
+  gomplate:
+    profiles: [template]
+    image: gomplate/gomplate:v5.1.0-alpine
+    working_dir: /workdir

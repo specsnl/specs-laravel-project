@@ -60,3 +60,7 @@ services:
       - ./:/var/www/
       - cache:/cache
 [[- end ]]
+
+  gomplate:
+    volumes:
+      - ./:/workdir

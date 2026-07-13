@@ -50,7 +50,7 @@ computed:
 
 hooks:
   post-use:
+    - git init
     - task setup:env-file:local
     - task md:fixstyle
-    - git init
     - git add .

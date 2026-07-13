@@ -1,6 +1,6 @@
 volumes:
   cache:
-  [[ eq .Database "postgres" | ternary "postgres_data:" (eq .Database "mysql" | ternary "mysql_data:" "mariadb_data:") ]]
+  db_data:
 
 services:
   volume-init:
@@ -43,20 +43,20 @@ services:
 
   postgres:
     volumes:
-      - postgres_data:/var/lib/postgresql
+      - db_data:/var/lib/postgresql
       - ./postgres/init:/docker-entrypoint-initdb.d
 [[- else if eq .Database "mysql" ]]
 
   mysql:
     volumes:
-      - mysql_data:/var/lib/mysql
+      - db_data:/var/lib/mysql
       - ./mysql/init:/docker-entrypoint-initdb.d
       - ./mysql/custom.cnf:/etc/mysql/conf.d/custom.cnf
 [[- else ]]
 
   mariadb:
     volumes:
-      - mariadb_data:/var/lib/mysql
+      - db_data:/var/lib/mysql
       - ./mariadb/init:/docker-entrypoint-initdb.d
       - ./mariadb/custom.cnf:/etc/mysql/conf.d/custom.cnf
 [[- end ]]

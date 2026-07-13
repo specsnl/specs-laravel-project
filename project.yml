@@ -31,9 +31,8 @@ computed:
   DbLabel: >-
     [[ eq .Database "postgres" | ternary "PostgreSQL" (eq .Database "mysql" | ternary "MySQL" "MariaDB") ]]
   DbConnection: >-
-    [[ eq .Database "postgres" | ternary "pgsql" (eq .Database "mysql" | ternary "mysql" "mariadb") ]]
-  DbHost: >-
-    [[ .Database ]]
+    [[ eq .Database "postgres" | ternary "pgsql" .Database ]]
+  DbHost: db_app
   DbPort: >-
     [[ eq .Database "postgres" | ternary "5432" "3306" ]]
   DbDatabase: >-
@@ -47,6 +46,8 @@ computed:
   Php83DockerTag: "1.8.7" # Latest version: https://github.com/specsnl/php83/releases/latest
   PhpDockerTag: >-
     [[ eq .PhpVersion "8.4" | ternary .Php84DockerTag (eq .PhpVersion "8.3" | ternary .Php83DockerTag .Php85DockerTag) ]]
+  DbImageTag: >-
+    [[ eq .Database "postgres" | ternary "postgres:18.4-trixie" (eq .Database "mysql" | ternary "mysql:8.4.9" "mariadb:11.8.6-noble") ]]
 
 hooks:
   post-use:

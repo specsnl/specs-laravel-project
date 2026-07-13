@@ -74,8 +74,8 @@ jobs:
     needs: [setup-npm-cache, setup-composer-cache]
     services:
       [[- if eq .Database "postgres" ]]
-      postgres:
-        image: postgres:18.4-trixie
+      db_app:
+        image: [[ .DbImageTag ]]
         env:
           POSTGRES_DB: "[[ .DbDatabase ]]_test"
           POSTGRES_USER: "[[ .DbUsername ]]_test"
@@ -84,8 +84,8 @@ jobs:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 3
       [[- else if eq .Database "mysql" ]]
-      mysql:
-        image: mysql:8.4.9
+      db_app:
+        image: [[ .DbImageTag ]]
         env:
           MYSQL_DATABASE: "[[ .DbDatabase ]]_test"
           MYSQL_USER: "[[ .DbUsername ]]_test"
@@ -95,8 +95,8 @@ jobs:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval 5s --health-timeout 5s --health-retries 3
       [[- else ]]
-      mariadb:
-        image: mariadb:11.8.6-noble
+      db_app:
+        image: [[ .DbImageTag ]]
         env:
           MARIADB_DATABASE: "[[ .DbDatabase ]]_test"
           MARIADB_USER: "[[ .DbUsername ]]_test"
@@ -196,8 +196,8 @@ jobs:
     needs: [setup-composer-cache]
     services:
       [[- if eq .Database "postgres" ]]
-      postgres:
-        image: postgres:18.4-trixie
+      db_app:
+        image: [[ .DbImageTag ]]
         env:
           POSTGRES_DB: "[[ .DbDatabase ]]_test"
           POSTGRES_USER: "[[ .DbUsername ]]_test"
@@ -206,8 +206,8 @@ jobs:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 3
       [[- else if eq .Database "mysql" ]]
-      mysql:
-        image: mysql:8.4.9
+      db_app:
+        image: [[ .DbImageTag ]]
         env:
           MYSQL_DATABASE: "[[ .DbDatabase ]]_test"
           MYSQL_USER: "[[ .DbUsername ]]_test"
@@ -217,8 +217,8 @@ jobs:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval 5s --health-timeout 5s --health-retries 3
       [[- else ]]
-      mariadb:
-        image: mariadb:11.8.6-noble
+      db_app:
+        image: [[ .DbImageTag ]]
         env:
           MARIADB_DATABASE: "[[ .DbDatabase ]]_test"
           MARIADB_USER: "[[ .DbUsername ]]_test"

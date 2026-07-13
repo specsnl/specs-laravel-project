@@ -82,15 +82,13 @@ tasks:
           OFFSET=$(( $(echo -n "{{ .SLUG }}" | cksum | cut -d' ' -f1) % 1000 + 1 ))
           NGINX_PORT=$(( 8080 + OFFSET ))
           DB_PORT=$(( {{ .DB_BASE_PORT }} + OFFSET ))
-          REDIS_PORT=$(( 6379 + OFFSET ))
           MAILPIT_PORT=$(( 8025 + OFFSET ))
           sed -e "s#^DOCKER_NGINX_PORT=.*#DOCKER_NGINX_PORT=${NGINX_PORT}#" \
               -e "s#^{{ .DB_PORT_VAR }}=.*#{{ .DB_PORT_VAR }}=${DB_PORT}#" \
-              -e "s#^DOCKER_REDIS_PORT=.*#DOCKER_REDIS_PORT=${REDIS_PORT}#" \
               -e "s#^DOCKER_MAILPIT_PORT=.*#DOCKER_MAILPIT_PORT=${MAILPIT_PORT}#" \
               -e "s#^APP_URL=.*#APP_URL=http://localhost:${NGINX_PORT}#" \
             "{{ .WT_PATH }}/.env" > "{{ .WT_PATH }}/.env.tmp" && mv -f "{{ .WT_PATH }}/.env.tmp" "{{ .WT_PATH }}/.env"
-          echo "Assigned host ports -> nginx:${NGINX_PORT} db:${DB_PORT} redis:${REDIS_PORT} mailpit:${MAILPIT_PORT}"
+          echo "Assigned host ports -> nginx:${NGINX_PORT} db:${DB_PORT} mailpit:${MAILPIT_PORT}"
           echo "Verify these do not collide with other running worktrees."
       # 5. Bring the worktree's stack up.
       - task --dir "{{ .WT_PATH }}" up

@@ -4,7 +4,7 @@ version: '3.50'
 # silent: true
 
 vars:
-  SPECS_TEMPLATE_NAME: laravel-13-project
+  SPECS_TEMPLATE_NAME: specs-laravel-project
   SPECS_TEMPLATE_TEST_NAME: '{{ .SPECS_TEMPLATE_NAME }}-test'
 
 tasks:

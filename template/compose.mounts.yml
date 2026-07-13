@@ -39,26 +39,15 @@ services:
       - ./public:/var/www/public
       - ./storage:/var/www/storage
 
+  db_app:
+    volumes:
 [[- if eq .Database "postgres" ]]
-
-  db_app:
-    volumes:
       - db_data:/var/lib/postgresql
-      - ./postgres/init:/docker-entrypoint-initdb.d
-[[- else if eq .Database "mysql" ]]
-
-  db_app:
-    volumes:
-      - db_data:/var/lib/mysql
-      - ./mysql/init:/docker-entrypoint-initdb.d
-      - ./mysql/custom.cnf:/etc/mysql/conf.d/custom.cnf
+      - ./db_app/init:/docker-entrypoint-initdb.d
 [[- else ]]
-
-  db_app:
-    volumes:
       - db_data:/var/lib/mysql
-      - ./mariadb/init:/docker-entrypoint-initdb.d
-      - ./mariadb/custom.cnf:/etc/mysql/conf.d/custom.cnf
+      - ./db_app/init:/docker-entrypoint-initdb.d
+      - ./db_app/custom.cnf:/etc/mysql/conf.d/custom.cnf
 [[- end ]]
 
   markdown-linter:

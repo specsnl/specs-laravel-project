@@ -1,7 +1,7 @@
 # https://taskfile.dev
 version: '3.50'
 
-# silent: true
+silent: true
 
 vars:
   SPECS_TEMPLATE_NAME: specs-laravel-project

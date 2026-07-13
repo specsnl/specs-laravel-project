@@ -40,8 +40,8 @@ tasks:
         - Without OrbStack: also assigns unique host ports (printed at the end).
         - Runs "task up" inside the worktree.
 
-      Note: if .env.example later changes (e.g. a project update), a subsequent
-      "task up" inside the worktree will re-copy it and reset COMPOSE_PROJECT_NAME;
+      Note: if .env.template later changes (e.g. a project update), a subsequent
+      "task up" inside the worktree will re-genrate it and reset COMPOSE_PROJECT_NAME;
       re-run this task or re-patch .env if that happens.
     requires:
       vars: [ NAME ]
@@ -62,11 +62,11 @@ tasks:
         else
           git worktree add -b "{{ .WT_BRANCH }}" "{{ .WT_PATH }}"
         fi
-      # 2. Seed the env files first. This records Task's checksum for .env.example so
-      #    the "task up" below treats env-file:local as up-to-date and does NOT
+      # 2. Seed the env files first. This records Task's checksum for .env.template so
+      #    the "task up" below treats env:generate as up-to-date and does NOT
       #    overwrite the COMPOSE_PROJECT_NAME we patch in step 3/4.
-      - task --dir "{{ .WT_PATH }}" setup:env-file:local
-      - task --dir "{{ .WT_PATH }}" setup:env-file:testing
+      - task --dir "{{ .WT_PATH }}" env:generate
+      - task --dir "{{ .WT_PATH }}" env:generate:testing
       # 3. Unique project name -> unique containers, network, volumes and domains.
       - |
         sed -e 's#^COMPOSE_PROJECT_NAME=.*#COMPOSE_PROJECT_NAME="{{ .PROJECT }}"#' \

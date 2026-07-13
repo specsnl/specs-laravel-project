@@ -25,6 +25,7 @@ includes:
   md: .taskfiles/Taskfile.md.yml
   cleanup: .taskfiles/Taskfile.cleanup.yml
   worktrees: .taskfiles/Taskfile.worktrees.yml
+  env: .taskfiles/Taskfile.env.yml
 
 tasks:
 
@@ -67,7 +68,7 @@ tasks:
 
   build:
     desc: Build all docker images
-    deps: [ setup:env-file:local ]
+    deps: [ env:generate ]
     preconditions:
       - sh: test -f auth.json
         msg: Create an auth.json file by running "task setup:auth".
@@ -79,8 +80,8 @@ tasks:
   up:
     desc: Start development environment
     cmds:
-      - task: setup:env-file:local
-      - task: setup:env-file:testing
+      - task: env:generate
+      - task: env:generate:testing
       - task: setup:if-not-exist
       - task: dc
         vars:
@@ -90,8 +91,8 @@ tasks:
   ci:up:
     desc: Start the environment on a fresh CI runner (skips the setup:if-not-exist guard)
     cmds:
-      - task: setup:env-file:local
-      - task: setup:env-file:testing
+      - task: env:generate
+      - task: env:generate:testing
       - task: composer:install
       - task: npm:install
       - task: dc
@@ -171,8 +172,8 @@ tasks:
   refresh:
     desc: Refresh the application
     cmds:
-      # - task: setup:env-file:local # for now comment because user might lose existing .env values... will add a "smarter" way to do this later
-      - task: setup:env-file:testing
+      - task: env:generate
+      - task: env:generate:testing
       - task: composer:install
       - task: npm:install
       # We are only adding new migrations and not running migrate:refresh so we don't lose our data for the dev environment:

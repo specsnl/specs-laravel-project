@@ -85,7 +85,11 @@ tasks:
       - task: setup:if-not-exist
       - task: dc
         vars:
-          SUB_CMD: 'up -d'
+          SUB_CMD: 'up --detach --remove-orphans'
+      - task: dc
+        vars:
+          SUB_CMD: 'rm volume-init --force'
+
 [[- if .AddE2E ]]
 
   ci:up:

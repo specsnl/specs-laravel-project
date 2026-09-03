@@ -47,13 +47,18 @@ runs:
       shell: bash
       run: composer install --no-interaction --no-progress --prefer-dist --ignore-platform-reqs
 
-    - name: Copy .env.example to .env
-      shell: bash
-      run: cp .env.example .env
+    - name: Install Task
+      uses: go-task/setup-task@v2
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Copy .env.testing.example to .env.testing
+    - name: Generate .env
       shell: bash
-      run: cp .env.testing.example .env.testing
+      run: task env:generate
+
+    - name: Generate .env.testing
+      shell: bash
+      run: task env:generate:testing
 
     - name: Update .env.testing DB_HOST
       shell: bash

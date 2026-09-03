@@ -1,17 +1,9 @@
 volumes:
   cache:
-  [[ eq .Database "postgres" | ternary "postgres_data:" (eq .Database "mysql" | ternary "mysql_data:" "mariadb_data:") ]]
+  db_data:
 
 services:
   volume-init:
-    image: busybox:1.37.0-musl
-    user: root
-    command:
-      - sh
-      - -c
-      - |
-        mkdir -p /cache/node
-        chown -R ${FIXUID:-1000}:${FIXGID:-1000} /cache
     volumes:
       - cache:/cache
 
@@ -47,26 +39,15 @@ services:
       - ./public:/var/www/public
       - ./storage:/var/www/storage
 
+  db_app:
+    volumes:
 [[- if eq .Database "postgres" ]]
-
-  postgres:
-    volumes:
-      - postgres_data:/var/lib/postgresql
-      - ./postgres/init:/docker-entrypoint-initdb.d
-[[- else if eq .Database "mysql" ]]
-
-  mysql:
-    volumes:
-      - mysql_data:/var/lib/mysql
-      - ./mysql/init:/docker-entrypoint-initdb.d
-      - ./mysql/custom.cnf:/etc/mysql/conf.d/custom.cnf
+      - db_data:/var/lib/postgresql
+      - ./db_app/init:/docker-entrypoint-initdb.d
 [[- else ]]
-
-  mariadb:
-    volumes:
-      - mariadb_data:/var/lib/mysql
-      - ./mariadb/init:/docker-entrypoint-initdb.d
-      - ./mariadb/custom.cnf:/etc/mysql/conf.d/custom.cnf
+      - db_data:/var/lib/mysql
+      - ./db_app/init:/docker-entrypoint-initdb.d
+      - ./db_app/custom.cnf:/etc/mysql/conf.d/custom.cnf
 [[- end ]]
 
   markdown-linter:
@@ -79,3 +60,7 @@ services:
       - ./:/var/www/
       - cache:/cache
 [[- end ]]
+
+  gomplate:
+    volumes:
+      - ./:/workdir

@@ -88,7 +88,7 @@ RUN php artisan package:discover --ansi \
 
 RUN chown -R www-data: /var/www/storage /var/www/bootstrap/cache
 
-FROM ghcr.io/specsnl/php[[ .PhpVersion | replace "."  "" ]]/runtime:[[ .PhpDockerTag ]] AS runtime
+FROM ghcr.io/specsnl/php[[ .PhpVersion | replace "."  "" ]]:[[ .PhpDockerTag ]] AS runtime
 
 COPY --link app/ /var/www/app/
 COPY --link config/ /var/www/config/

@@ -40,8 +40,8 @@ tasks:
         - Without OrbStack: also assigns unique host ports (printed at the end).
         - Runs "task up" inside the worktree.
 
-      Note: if .env.example later changes (e.g. a project update), a subsequent
-      "task up" inside the worktree will re-copy it and reset COMPOSE_PROJECT_NAME;
+      Note: if .env.template later changes (e.g. a project update), a subsequent
+      "task up" inside the worktree will re-genrate it and reset COMPOSE_PROJECT_NAME;
       re-run this task or re-patch .env if that happens.
     requires:
       vars: [ NAME ]
@@ -62,11 +62,11 @@ tasks:
         else
           git worktree add -b "{{ .WT_BRANCH }}" "{{ .WT_PATH }}"
         fi
-      # 2. Seed the env files first. This records Task's checksum for .env.example so
-      #    the "task up" below treats env-file:local as up-to-date and does NOT
+      # 2. Seed the env files first. This records Task's checksum for .env.template so
+      #    the "task up" below treats env:generate as up-to-date and does NOT
       #    overwrite the COMPOSE_PROJECT_NAME we patch in step 3/4.
-      - task --dir "{{ .WT_PATH }}" setup:env-file:local
-      - task --dir "{{ .WT_PATH }}" setup:env-file:testing
+      - task --dir "{{ .WT_PATH }}" env:generate
+      - task --dir "{{ .WT_PATH }}" env:generate:testing
       # 3. Unique project name -> unique containers, network, volumes and domains.
       - |
         sed -e 's#^COMPOSE_PROJECT_NAME=.*#COMPOSE_PROJECT_NAME="{{ .PROJECT }}"#' \
@@ -82,15 +82,13 @@ tasks:
           OFFSET=$(( $(echo -n "{{ .SLUG }}" | cksum | cut -d' ' -f1) % 1000 + 1 ))
           NGINX_PORT=$(( 8080 + OFFSET ))
           DB_PORT=$(( {{ .DB_BASE_PORT }} + OFFSET ))
-          REDIS_PORT=$(( 6379 + OFFSET ))
           MAILPIT_PORT=$(( 8025 + OFFSET ))
           sed -e "s#^DOCKER_NGINX_PORT=.*#DOCKER_NGINX_PORT=${NGINX_PORT}#" \
               -e "s#^{{ .DB_PORT_VAR }}=.*#{{ .DB_PORT_VAR }}=${DB_PORT}#" \
-              -e "s#^DOCKER_REDIS_PORT=.*#DOCKER_REDIS_PORT=${REDIS_PORT}#" \
               -e "s#^DOCKER_MAILPIT_PORT=.*#DOCKER_MAILPIT_PORT=${MAILPIT_PORT}#" \
               -e "s#^APP_URL=.*#APP_URL=http://localhost:${NGINX_PORT}#" \
             "{{ .WT_PATH }}/.env" > "{{ .WT_PATH }}/.env.tmp" && mv -f "{{ .WT_PATH }}/.env.tmp" "{{ .WT_PATH }}/.env"
-          echo "Assigned host ports -> nginx:${NGINX_PORT} db:${DB_PORT} redis:${REDIS_PORT} mailpit:${MAILPIT_PORT}"
+          echo "Assigned host ports -> nginx:${NGINX_PORT} db:${DB_PORT} mailpit:${MAILPIT_PORT}"
           echo "Verify these do not collide with other running worktrees."
       # 5. Bring the worktree's stack up.
       - task --dir "{{ .WT_PATH }}" up

@@ -12,6 +12,16 @@ services:
       COREPACK_DEFAULT_TO_LATEST: 0
       COREPACK_ENABLE_DOWNLOAD_PROMPT: 0
 
+  volume-init:
+    image: busybox:1.37.0-musl
+    user: root
+    command:
+      - sh
+      - -c
+      - |
+        mkdir -p /cache/node
+        chown -R ${FIXUID:-1000}:${FIXGID:-1000} /cache
+
   php:
     user: ${FIXUID:-1000}:${FIXGID:-1000}
     build:
@@ -35,12 +45,11 @@ services:
     command:
       - bash
       - -c
-      - "trap : 3 ; wait-for-it [[ .DbHost ]]:[[ .DbPort ]] --strict --timeout=20 -- wait-for-it redis:6379 --strict --timeout=20 -- php artisan queue:listen --sleep=10 & wait"
+      - "trap : 3 ; wait-for-it [[ .DbHost ]]:[[ .DbPort ]] --strict --timeout=20 -- php artisan queue:listen --sleep=10 & wait"
     environment:
       PHP_COMPOSER_INSTALL_DEV: false
     depends_on:
       - php
-      - redis
       - [[ .DbHost ]]
 
   nginx:
@@ -56,51 +65,31 @@ services:
     labels:
       - dev.orbstack.domains=${COMPOSE_PROJECT_NAME:-[[ .ProjectShortName | toKebabCase ]]}.local
       - dev.orbstack.http-port=80
-[[- if .AddE2E ]]
     networks:
       default:
         aliases:
           - ${COMPOSE_PROJECT_NAME:-[[ .ProjectShortName | toKebabCase ]]}.local
-[[- end ]]
 
+  db_app:
+    image: [[ .DbImageTag ]]
+    environment:
 [[- if eq .Database "postgres" ]]
-
-  postgres:
-    image: postgres:18.4-trixie
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    labels:
-      - dev.orbstack.domains=db.${COMPOSE_PROJECT_NAME:-[[ .ProjectShortName | toKebabCase ]]}.local
+      POSTGRES_DB: ${DB_APP_DATABASE}
+      POSTGRES_USER: ${DB_APP_USER}
+      POSTGRES_PASSWORD: ${DB_APP_PASSWORD}
 [[- else if eq .Database "mysql" ]]
-
-  mysql:
-    image: mysql:8.4.9
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-    labels:
-      - dev.orbstack.domains=db.${COMPOSE_PROJECT_NAME:-[[ .ProjectShortName | toKebabCase ]]}.local
+      MYSQL_ROOT_PASSWORD: ${DB_APP_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_APP_DATABASE}
+      MYSQL_USER: ${DB_APP_USER}
+      MYSQL_PASSWORD: ${DB_APP_PASSWORD}
 [[- else ]]
-
-  mariadb:
-    image: mariadb:11.8.6-noble
-    environment:
-      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
-      MARIADB_DATABASE: ${MARIADB_DATABASE}
-      MARIADB_USER: ${MARIADB_USER}
-      MARIADB_PASSWORD: ${MARIADB_PASSWORD}
+      MARIADB_ROOT_PASSWORD: ${DB_APP_ROOT_PASSWORD}
+      MARIADB_DATABASE: ${DB_APP_DATABASE}
+      MARIADB_USER: ${DB_APP_USER}
+      MARIADB_PASSWORD: ${DB_APP_PASSWORD}
+[[- end ]]
     labels:
       - dev.orbstack.domains=db.${COMPOSE_PROJECT_NAME:-[[ .ProjectShortName | toKebabCase ]]}.local
-[[- end ]]
-
-  redis:
-    image: redis:7.4.9-bookworm
-    labels:
-      - dev.orbstack.domains=redis.${COMPOSE_PROJECT_NAME:-[[ .ProjectShortName | toKebabCase ]]}.local
 
   mailpit:
     image: axllent/mailpit:v1.30.2
@@ -111,6 +100,7 @@ services:
   markdown-linter:
     image: davidanson/markdownlint-cli2:v0.22.1
     profiles: [markdown-lint]
+
 [[- if .AddE2E ]]
 
   e2e-playwright:
@@ -121,4 +111,10 @@ services:
       - nginx
     environment:
       BASE_URL: http://${COMPOSE_PROJECT_NAME:-[[ .ProjectShortName | toKebabCase ]]}.local
+
 [[- end ]]
+
+  gomplate:
+    profiles: [template]
+    image: gomplate/gomplate:v5.1.0-alpine
+    working_dir: /workdir

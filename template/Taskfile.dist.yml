@@ -36,6 +36,11 @@ tasks:
       FIXGID:
         sh: echo ${FIXGID:-$(id -g)}
     cmds:
+      - defer: >-
+          docker compose
+          --file compose.yml
+          --file compose.mounts.yml
+          rm --stop --force volume-init
       - >-
         FIXUID={{ .FIXUID }} FIXGID={{ .FIXGID }}
         docker compose

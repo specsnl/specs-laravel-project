@@ -25,6 +25,7 @@ includes:
   md: .taskfiles/Taskfile.md.yml
   cleanup: .taskfiles/Taskfile.cleanup.yml
   worktrees: .taskfiles/Taskfile.worktrees.yml
+  env: .taskfiles/Taskfile.env.yml
 
 tasks:
 

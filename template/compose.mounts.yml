@@ -4,14 +4,6 @@ volumes:
 
 services:
   volume-init:
-    image: busybox:1.37.0-musl
-    user: root
-    command:
-      - sh
-      - -c
-      - |
-        mkdir -p /cache/node
-        chown -R ${FIXUID:-1000}:${FIXGID:-1000} /cache
     volumes:
       - cache:/cache
 

@@ -45,12 +45,11 @@ services:
     command:
       - bash
       - -c
-      - "trap : 3 ; wait-for-it [[ .DbHost ]]:[[ .DbPort ]] --strict --timeout=20 -- wait-for-it redis:6379 --strict --timeout=20 -- php artisan queue:listen --sleep=10 & wait"
+      - "trap : 3 ; wait-for-it [[ .DbHost ]]:[[ .DbPort ]] --strict --timeout=20 -- php artisan queue:listen --sleep=10 & wait"
     environment:
       PHP_COMPOSER_INSTALL_DEV: false
     depends_on:
       - php
-      - redis
       - [[ .DbHost ]]
 
   nginx:
@@ -106,11 +105,6 @@ services:
     labels:
       - dev.orbstack.domains=db.${COMPOSE_PROJECT_NAME:-[[ .ProjectShortName | toKebabCase ]]}.local
 [[- end ]]
-
-  redis:
-    image: redis:7.4.9-bookworm
-    labels:
-      - dev.orbstack.domains=redis.${COMPOSE_PROJECT_NAME:-[[ .ProjectShortName | toKebabCase ]]}.local
 
   mailpit:
     image: axllent/mailpit:v1.30.2

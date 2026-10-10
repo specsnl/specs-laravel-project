@@ -41,13 +41,19 @@ computed:
     [[ .ProjectShortName | toSnakeCase ]]
   DbPassword: password
 
+  # PHP Images
   Php85DockerTag: "0.5.9" # Latest version: https://github.com/specsnl/php85/releases/latest
   Php84DockerTag: "1.5.9" # Latest version: https://github.com/specsnl/php84/releases/latest
   Php83DockerTag: "1.8.9" # Latest version: https://github.com/specsnl/php83/releases/latest
   PhpDockerTag: >-
     [[ eq .PhpVersion "8.4" | ternary .Php84DockerTag (eq .PhpVersion "8.3" | ternary .Php83DockerTag .Php85DockerTag) ]]
+
+  # Database images
+  PostgresImageTag: "postgres:18.6-trixie" # Latest version: https://hub.docker.com/_/postgres/tags
+  MysqlImageTag: "mysql:8.4.11" # Latest version: https://hub.docker.com/_/mysql/tags
+  MariadDbImageTag: "mariadb:11.8.9-noble" # Latest version: https://hub.docker.com/_/mariadb/tags
   DbImageTag: >-
-    [[ eq .Database "postgres" | ternary "postgres:18.4-trixie" (eq .Database "mysql" | ternary "mysql:8.4.9" "mariadb:11.8.6-noble") ]]
+    [[ eq .Database "postgres" | ternary .PostgresImageTag (eq .Database "mysql" | ternary .MysqlImageTag .MariadDbImageTag) ]]
 
 hooks:
   post-use:

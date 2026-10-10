@@ -3,7 +3,7 @@ services:
     ports:
       - ${DOCKER_NGINX_PORT:-8080}:80
 
-[[ if eq .Database "postgres" ]]
+[[- if eq .Database "postgres" ]]
 
   postgres:
     ports:

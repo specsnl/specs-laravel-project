@@ -23,8 +23,8 @@ tasks:
       - task: init:npm-lock
       - task: :build
         if: '[ "${GITHUB_ACTIONS:-}" != "true" ]'
-      - task: env-file:local
-      - task: env-file:testing
+      - task: :env:generate
+      - task: :env:generate:testing
       - task: :composer:install
       - task: :npm:install
       - task: :dc
@@ -53,31 +53,6 @@ tasks:
       - test -f package-lock.json
     cmds:
       - task: :npm:update
-
-  env-file:local:
-    desc: Template .env
-    run: once
-    cmds:
-      - cp .env.example .env
-      - cmd: |
-          if [ "{{ .ORBSTACK_ENABLED }}" = "1" ]; then
-            sed -i '' 's#^\(APP_URL=\).*#\1{{ .ORB_APP_HOST }}#' .env
-          fi
-        platforms: [darwin]
-    sources:
-      - .env.example
-    generates:
-      - .env
-
-  env-file:testing:
-    desc: Template .env.testing
-    run: once
-    cmds:
-      - cp .env.testing.example .env.testing
-    sources:
-      - .env.testing.example
-    generates:
-      - .env.testing
 
   auth:
     desc: Configure composer authentication by creating an local auth.json file.

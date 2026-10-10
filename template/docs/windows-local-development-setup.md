@@ -23,7 +23,7 @@
 3. Run in a "PowerShell" tab:
 
     ```powershell
-    wsl --instal --distribution ubuntu-24.04
+    wsl --instal --distribution ubuntu-26.04
     ```
 
     *Windows will occasionally prompt you, after it's done restart the machine.*

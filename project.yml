@@ -52,6 +52,6 @@ computed:
 hooks:
   post-use:
     - git init
-    - task setup:env-file:local
+    - task env:generate
     - task md:fixstyle
     - git add .

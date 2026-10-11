@@ -17,6 +17,8 @@
         "infer-conventions",
         "laravel-best-practices",
         "testing-best-practices",
-        "tailwindcss-development"
+        "tailwindcss-development"[[- if .AddFilament ]],
+        "filament-development"
+        [[- end ]]
     ]
 }

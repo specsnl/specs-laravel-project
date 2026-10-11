@@ -7,7 +7,6 @@ use Rector\Php55\Rector\String_\StringClassNameToClassConstantRector;
 use Rector\Renaming\Rector\ClassConstFetch\RenameClassConstFetchRector;
 use RectorLaravel\Rector\FuncCall\RemoveDumpDataDeadCodeRector;
 use RectorLaravel\Set\LaravelSetList;
-use RectorLaravel\Set\LaravelSetProvider;
 
 return RectorConfig::configure()
     ->withPaths([
@@ -29,7 +28,6 @@ return RectorConfig::configure()
     ->withBootstrapFiles([
         __DIR__ . '/vendor/larastan/larastan/bootstrap.php',
     ])
-    ->withSetProviders(LaravelSetProvider::class)
     ->withComposerBased(phpunit: true, laravel: true)
     ->withAttributesSets()
     ->withPhpSets()

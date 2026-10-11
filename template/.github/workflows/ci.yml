@@ -16,7 +16,7 @@ permissions:
 jobs:
   setup-npm-cache:
     name: Setup NPM cache
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
@@ -27,7 +27,7 @@ jobs:
 
   setup-composer-cache:
     name: Setup Composer cache
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
@@ -39,7 +39,7 @@ jobs:
 
   audit-composer:
     name: Dependency Audit Composer
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: [setup-composer-cache]
     steps:
       - name: Checkout
@@ -56,7 +56,7 @@ jobs:
 
   audit-npm:
     name: Dependency Audit NPM
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: [setup-npm-cache]
     steps:
       - name: Checkout
@@ -70,7 +70,7 @@ jobs:
 
   be-unit-tests:
     name: Check back-end unit tests
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: [setup-npm-cache, setup-composer-cache]
     services:
       [[- if eq .Database "postgres" ]]
@@ -138,7 +138,7 @@ jobs:
 
   be-code-style-linting:
     name: Check back-end Code Style
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: [setup-composer-cache]
     steps:
       - name: Checkout
@@ -159,7 +159,7 @@ jobs:
 
   be-static-code-analysis:
     name: Check back-end Static Code Analysis
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: [setup-composer-cache]
     steps:
       - name: Checkout repository
@@ -192,7 +192,7 @@ jobs:
 
   be-check-docblocks:
     name: Check back-end Model DocBlocks
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: [setup-composer-cache]
     services:
       [[- if eq .Database "postgres" ]]
@@ -252,7 +252,7 @@ jobs:
 
   e2e-check-tests:
     name: Check E2E tests
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: [setup-npm-cache, setup-composer-cache]
     steps:
       - name: Checkout repository
@@ -270,7 +270,7 @@ jobs:
           COMPOSER_AUTH_JSON: ${{ secrets.COMPOSER_AUTH_JSON }}
         run: echo "$COMPOSER_AUTH_JSON" > auth.json
       - name: Setup Node (warms ~/.npm for Docker npm cache mount)
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: "24"
           cache: npm

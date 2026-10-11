@@ -1,6 +1,5 @@
 {
     "agents": [
-        "copilot",
         "claude_code"
     ],
     "cloud": false,
@@ -14,7 +13,11 @@
     [[- end ]]
     "sail": false,
     "skills": [
+        "infer-conventions",
         "laravel-best-practices",
-        "tailwindcss-development"
+        "testing-best-practices",
+        "tailwindcss-development"[[- if .AddFilament ]],
+        "filament-development"
+        [[- end ]]
     ]
 }

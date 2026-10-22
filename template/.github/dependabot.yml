@@ -31,7 +31,9 @@ updates:
           - vite
           - laravel-vite-plugin
   - package-ecosystem: github-actions
-    directory: /
+    directories:
+      - /
+      - /.github/actions/*
     schedule:
       interval: weekly
     labels:

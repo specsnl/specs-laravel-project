@@ -69,3 +69,16 @@ updates:
     commit-message:
       prefix: build
       include: scope
+  - package-ecosystem: docker-compose
+    directory: /
+    schedule:
+      interval: weekly
+    ignore:
+      - dependency-name: mariadb
+        update-types: [version-update:semver-major, version-update:semver-minor]
+    labels:
+      - dependencies
+      - docker
+    commit-message:
+      prefix: build
+      include: scope

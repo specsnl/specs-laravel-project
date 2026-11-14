@@ -70,8 +70,12 @@ updates:
     schedule:
       interval: weekly
     ignore:
-      - dependency-name: mariadb
+      - dependency-name: "[[ .Database ]]"
+[[- if eq .Database "postgres" ]]
+        update-types: [version-update:semver-major]
+[[- else ]]
         update-types: [version-update:semver-major, version-update:semver-minor]
+[[- end ]]
     labels:
       - dependencies
       - docker

@@ -88,6 +88,84 @@ jobs:
           done
           exit $status
 
+  docker-changes:
+    name: Detect Docker changes
+    runs-on: ubuntu-26.04
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      docker: ${{ steps.filter.outputs.docker }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+      - name: Filter changed paths
+        uses: dorny/paths-filter@v4
+        id: filter
+        with:
+          filters: |
+            docker:
+              - .dockerignore
+              - compose.yml
+              - nginx/**
+              - php/**
+
+  docker-build:
+    name: Build Docker images
+    runs-on: ubuntu-26.04
+    needs: [docker-changes]
+    if: needs.docker-changes.outputs.docker == 'true'
+    permissions:
+      contents: read
+      packages: read
+    env:
+      COMPOSER_AUTH_JSON: ${{ secrets.COMPOSER_AUTH_JSON }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+      - name: Log in to the Container registry
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Check that the compose.yml images exist
+        run: |
+          for image in $(yq '.services[].image | select(. != null)' compose.yml); do
+            echo "Checking $image"
+            docker buildx imagetools inspect "$image" > /dev/null
+          done
+      - name: Build PHP runtime image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: php/Dockerfile
+          target: runtime
+          push: false
+          secret-envs: composer_auth=COMPOSER_AUTH_JSON
+          cache-from: type=gha,scope=php
+          cache-to: type=gha,scope=php,mode=max
+      - name: Build PHP builder-local image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: php/Dockerfile
+          target: builder-local
+          push: false
+          secret-envs: composer_auth=COMPOSER_AUTH_JSON
+          cache-from: type=gha,scope=php
+      - name: Build nginx image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: nginx/Dockerfile
+          push: false
+          secret-envs: composer_auth=COMPOSER_AUTH_JSON
+          cache-from: type=gha,scope=nginx
+          cache-to: type=gha,scope=nginx,mode=max
+
   be-unit-tests:
     name: Check back-end unit tests
     runs-on: ubuntu-26.04

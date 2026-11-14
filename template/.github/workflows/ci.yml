@@ -272,7 +272,7 @@ jobs:
       - name: Setup Node (warms ~/.npm for Docker npm cache mount)
         uses: actions/setup-node@v7
         with:
-          node-version: "24"
+          node-version-file: .nvmrc
           cache: npm
           registry-url: https://npm.pkg.github.com
           token: ${{ secrets.GITHUB_TOKEN }}

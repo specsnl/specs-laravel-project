@@ -68,6 +68,26 @@ jobs:
       - name: Audit check for NPM
         run: npm audit
 
+  check-db-image:
+    name: Check DB image matches compose.yml
+    runs-on: ubuntu-26.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+      # Dependabot updates the DB image in compose.yml, but not the service containers in this workflow
+      - name: Compare the db_app images
+        run: |
+          expected=$(yq '.services.db_app.image' compose.yml)
+          status=0
+          for job in $(yq '.jobs | to_entries | .[] | select(.value.services.db_app) | .key' .github/workflows/ci.yml); do
+            actual=$(yq ".jobs.\"$job\".services.db_app.image" .github/workflows/ci.yml)
+            if [ "$actual" != "$expected" ]; then
+              echo "::error file=.github/workflows/ci.yml::Job $job uses db_app image $actual, but compose.yml uses $expected"
+              status=1
+            fi
+          done
+          exit $status
+
   be-unit-tests:
     name: Check back-end unit tests
     runs-on: ubuntu-26.04

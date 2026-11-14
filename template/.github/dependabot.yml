@@ -47,7 +47,9 @@ updates:
         patterns:
           - "specsnl/github-actions*"
   - package-ecosystem: docker
-    directory: /nginx
+    directories:
+      - /php
+      - /nginx
     schedule:
       interval: weekly
     ignore:
@@ -59,16 +61,10 @@ updates:
     commit-message:
       prefix: build
       include: scope
-  - package-ecosystem: docker
-    directory: /php
-    schedule:
-      interval: weekly
-    labels:
-      - dependencies
-      - docker
-    commit-message:
-      prefix: build
-      include: scope
+    groups:
+      specsnl-php-images:
+        patterns:
+          - "specsnl/php*"
   - package-ecosystem: docker-compose
     directory: /
     schedule:
@@ -82,3 +78,7 @@ updates:
     commit-message:
       prefix: build
       include: scope
+    groups:
+      specsnl-php-images:
+        patterns:
+          - "specsnl/php*"

@@ -9,6 +9,8 @@ updates:
     ignore:
       - dependency-name: laravel/framework
         update-types: [version-update:semver-major]
+    cooldown:
+      default-days: 3
     labels:
       - dependencies
       - php
@@ -24,6 +26,8 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 3
     labels:
       - dependencies
       - npm
@@ -45,6 +49,10 @@ updates:
       - /.github/actions/*
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 3
+      exclude:
+        - "specsnl/github-actions*"
     labels:
       - dependencies
       - github-actions
@@ -61,6 +69,10 @@ updates:
       - /nginx
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 3
+      exclude:
+        - "specsnl/php*"
     ignore:
       - dependency-name: alpine
         update-types: [version-update:semver-major, version-update:semver-minor]
@@ -78,6 +90,10 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 3
+      exclude:
+        - "specsnl/php*"
     ignore:
       - dependency-name: "[[ .Database ]]"
 [[- if eq .Database "postgres" ]]

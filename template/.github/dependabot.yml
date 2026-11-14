@@ -76,6 +76,10 @@ updates:
 [[- else ]]
         update-types: [version-update:semver-major, version-update:semver-minor]
 [[- end ]]
+[[- if .AddE2E ]]
+      # Bumped by hand together with @playwright/test in package.json (versions must match)
+      - dependency-name: mcr.microsoft.com/playwright
+[[- end ]]
     labels:
       - dependencies
       - docker

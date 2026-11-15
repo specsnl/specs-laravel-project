@@ -68,6 +68,104 @@ jobs:
       - name: Audit check for NPM
         run: npm audit
 
+  check-db-image:
+    name: Check DB image matches compose.yml
+    runs-on: ubuntu-26.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+      # Dependabot updates the DB image in compose.yml, but not the service containers in this workflow
+      - name: Compare the db_app images
+        run: |
+          expected=$(yq '.services.db_app.image' compose.yml)
+          status=0
+          for job in $(yq '.jobs | to_entries | .[] | select(.value.services.db_app) | .key' .github/workflows/ci.yml); do
+            actual=$(yq ".jobs.\"$job\".services.db_app.image" .github/workflows/ci.yml)
+            if [ "$actual" != "$expected" ]; then
+              echo "::error file=.github/workflows/ci.yml::Job $job uses db_app image $actual, but compose.yml uses $expected"
+              status=1
+            fi
+          done
+          exit $status
+
+  docker-changes:
+    name: Detect Docker changes
+    runs-on: ubuntu-26.04
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      docker: ${{ steps.filter.outputs.docker }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+      - name: Filter changed paths
+        uses: dorny/paths-filter@v4
+        id: filter
+        with:
+          filters: |
+            docker:
+              - .dockerignore
+              - compose.yml
+              - nginx/**
+              - php/**
+
+  docker-build:
+    name: Build Docker images
+    runs-on: ubuntu-26.04
+    needs: [docker-changes]
+    if: github.event_name == 'workflow_dispatch' || needs.docker-changes.outputs.docker == 'true'
+    permissions:
+      contents: read
+      packages: read
+    env:
+      COMPOSER_AUTH_JSON: ${{ secrets.COMPOSER_AUTH_JSON }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+      - name: Log in to the Container registry
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Check that the compose.yml images exist
+        run: |
+          for image in $(yq '.services[].image | select(. != null)' compose.yml); do
+            echo "Checking $image"
+            docker buildx imagetools inspect "$image" > /dev/null
+          done
+      - name: Build PHP runtime image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: php/Dockerfile
+          target: runtime
+          push: false
+          secret-envs: composer_auth=COMPOSER_AUTH_JSON
+          cache-from: type=gha,scope=php
+          cache-to: type=gha,scope=php,mode=max
+      - name: Build PHP builder-local image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: php/Dockerfile
+          target: builder-local
+          push: false
+          secret-envs: composer_auth=COMPOSER_AUTH_JSON
+          cache-from: type=gha,scope=php
+      - name: Build nginx image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: nginx/Dockerfile
+          push: false
+          secret-envs: composer_auth=COMPOSER_AUTH_JSON
+          cache-from: type=gha,scope=nginx
+          cache-to: type=gha,scope=nginx,mode=max
+
   be-unit-tests:
     name: Check back-end unit tests
     runs-on: ubuntu-26.04
@@ -272,7 +370,7 @@ jobs:
       - name: Setup Node (warms ~/.npm for Docker npm cache mount)
         uses: actions/setup-node@v7
         with:
-          node-version: "24"
+          node-version-file: .nvmrc
           cache: npm
           registry-url: https://npm.pkg.github.com
           token: ${{ secrets.GITHUB_TOKEN }}

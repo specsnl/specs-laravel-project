@@ -6,14 +6,14 @@ services:
   php-exec:
     user: ${FIXUID:-1000}:${FIXGID:-1000}
     entrypoint: ["fixuid", "-q"]
-    image: ghcr.io/specsnl/php[[ .PhpVersion | replace "."  "" ]]/builder_nodejs:[[ .PhpDockerTag ]]
+    image: ghcr.io/specsnl/php[[ .PhpVersion | replace "."  "" ]]/builder:[[ .PhpDockerTag ]]
     profiles: [exec]
     environment:
       COREPACK_DEFAULT_TO_LATEST: 0
       COREPACK_ENABLE_DOWNLOAD_PROMPT: 0
 
   volume-init:
-    image: busybox:1.37.0-musl
+    image: busybox:1.38.0-musl
     user: root
     command:
       - sh
@@ -92,20 +92,20 @@ services:
       - dev.orbstack.domains=db.${COMPOSE_PROJECT_NAME:-[[ .ProjectShortName | toKebabCase ]]}.local
 
   mailpit:
-    image: axllent/mailpit:v1.30.2
+    image: axllent/mailpit:v1.33.1
     labels:
       - dev.orbstack.domains=mail.${COMPOSE_PROJECT_NAME:-[[ .ProjectShortName | toKebabCase ]]}.local
       - dev.orbstack.http-port=8025
 
   markdown-linter:
-    image: davidanson/markdownlint-cli2:v0.22.1
+    image: davidanson/markdownlint-cli2:v0.24.1
     profiles: [markdown-lint]
 
 [[- if .AddE2E ]]
 
   e2e-playwright:
     profiles: [e2e]
-    image: mcr.microsoft.com/playwright:v1.61.0-noble
+    image: mcr.microsoft.com/playwright:v1.65.1-noble
     working_dir: /var/www
     depends_on:
       - nginx

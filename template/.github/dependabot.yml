@@ -9,16 +9,25 @@ updates:
     ignore:
       - dependency-name: laravel/framework
         update-types: [version-update:semver-major]
+    cooldown:
+      default-days: 3
     labels:
       - dependencies
       - php
     commit-message:
       prefix: build
       include: scope
+    groups:
+      composer-minor-patch:
+        update-types:
+          - minor
+          - patch
   - package-ecosystem: npm
     directory: /
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 3
     labels:
       - dependencies
       - npm
@@ -30,12 +39,25 @@ updates:
         patterns:
           - vite
           - laravel-vite-plugin
+[[- if .AddE2E ]]
+      playwright:
+        patterns:
+          - "@playwright/test"
+[[- end ]]
+      npm-minor-patch:
+        update-types:
+          - minor
+          - patch
   - package-ecosystem: github-actions
     directories:
       - /
       - /.github/actions/*
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 3
+      exclude:
+        - "specsnl/github-actions*"
     labels:
       - dependencies
       - github-actions
@@ -47,9 +69,15 @@ updates:
         patterns:
           - "specsnl/github-actions*"
   - package-ecosystem: docker
-    directory: /nginx
+    directories:
+      - /php
+      - /nginx
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 3
+      exclude:
+        - "specsnl/php*"
     ignore:
       - dependency-name: alpine
         update-types: [version-update:semver-major, version-update:semver-minor]
@@ -59,26 +87,36 @@ updates:
     commit-message:
       prefix: build
       include: scope
-  - package-ecosystem: docker
-    directory: /php
-    schedule:
-      interval: weekly
-    labels:
-      - dependencies
-      - docker
-    commit-message:
-      prefix: build
-      include: scope
+    groups:
+      specsnl-php-images:
+        patterns:
+          - "specsnl/php*"
   - package-ecosystem: docker-compose
     directory: /
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 3
+      exclude:
+        - "specsnl/php*"
     ignore:
-      - dependency-name: mariadb
+      - dependency-name: "[[ .Database ]]"
+[[- if eq .Database "postgres" ]]
+        update-types: [version-update:semver-major]
+[[- else ]]
         update-types: [version-update:semver-major, version-update:semver-minor]
+[[- end ]]
+[[- if .AddE2E ]]
+      # Bumped by hand together with @playwright/test in package.json (versions must match)
+      - dependency-name: mcr.microsoft.com/playwright
+[[- end ]]
     labels:
       - dependencies
       - docker
     commit-message:
       prefix: build
       include: scope
+    groups:
+      specsnl-php-images:
+        patterns:
+          - "specsnl/php*"

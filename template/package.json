@@ -17,8 +17,8 @@
     },
     "devDependencies": {
         [[- if .AddE2E ]]
-        "@playwright/test": "^1.61.0",
-        "@types/node": "^24.0.0",
+        "@playwright/test": "^1.65.1",
+        "@types/node": "^26.0.0",
         [[- end ]]
         "@tailwindcss/vite": "^4.0.0",
         "axios": "^1.11.0",
@@ -26,8 +26,8 @@
         "tailwindcss": "^4.0.0",
         "vite": "^8.0.13"
     },
-    "packageManager": "npm@11.21.0+sha512.668bfc2a16a63677a22dd10bb63e5800bb4d9895b82f87c22d3ce37e9cd71b6c3a3121dc7f453181d94ae6e9680ae92c593fbb986514ef08bbf5c3ba46a8af3e",
+    "packageManager": "npm@11.21.2+sha512.ec73c0a64f807e53146af4ac78bd4f9ba0a762a3081e4e77c7e2a6ba1aa64c3a8f9233cc8312294cf713aac13dd4428dc3880504957d7e75e249d1a6d435eaf4",
     "engines": {
-        "node": ">=24.0.0"
+        "node": ">=26.0.0"
     }
 }

@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM ghcr.io/specsnl/php[[ .PhpVersion | replace "."  "" ]]/builder_nodejs:[[ .PhpDockerTag]] AS deps
+FROM ghcr.io/specsnl/php[[ .PhpVersion | replace "."  "" ]]/builder:[[ .PhpDockerTag]] AS deps
 
 ARG COMPOSER_AUTH
 
@@ -25,7 +25,7 @@ RUN --mount=type=cache,target=/cache \
 
 RUN npm run build
 
-FROM ghcr.io/specsnl/php[[ .PhpVersion | replace "."  "" ]]/builder_nodejs:[[ .PhpDockerTag ]] AS builder-base
+FROM ghcr.io/specsnl/php[[ .PhpVersion | replace "."  "" ]]/builder:[[ .PhpDockerTag ]] AS builder-base
 
 ARG DEBIAN_FRONTEND=noninteractive
 

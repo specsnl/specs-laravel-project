@@ -39,6 +39,11 @@ updates:
         patterns:
           - vite
           - laravel-vite-plugin
+[[- if .AddE2E ]]
+      playwright:
+        patterns:
+          - "@playwright/test"
+[[- end ]]
       npm-minor-patch:
         update-types:
           - minor

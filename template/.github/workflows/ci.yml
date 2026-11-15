@@ -114,7 +114,7 @@ jobs:
     name: Build Docker images
     runs-on: ubuntu-26.04
     needs: [docker-changes]
-    if: needs.docker-changes.outputs.docker == 'true'
+    if: github.event_name == 'workflow_dispatch' || needs.docker-changes.outputs.docker == 'true'
     permissions:
       contents: read
       packages: read

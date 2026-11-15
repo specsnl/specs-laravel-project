@@ -17,7 +17,7 @@
     },
     "devDependencies": {
         [[- if .AddE2E ]]
-        "@playwright/test": "^1.61.0",
+        "@playwright/test": "^1.65.1",
         "@types/node": "^26.0.0",
         [[- end ]]
         "@tailwindcss/vite": "^4.0.0",

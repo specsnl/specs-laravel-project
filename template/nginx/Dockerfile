@@ -20,7 +20,7 @@ COPY --link ./ /var/www/
 RUN npm run build
 
 # https://hub.docker.com/_/alpine
-FROM alpine:3.23.5 AS files
+FROM alpine:3.23.8 AS files
 
 COPY --link ./nginx/files /files/
 COPY --link --from=deps /var/www/public/ /files/var/www/public/

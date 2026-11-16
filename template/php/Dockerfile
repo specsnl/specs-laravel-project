@@ -10,13 +10,12 @@ RUN --mount=type=cache,target=/cache \
     --mount=type=secret,id=composer_auth,env=COMPOSER_AUTH \
     composer install --no-progress --prefer-dist --no-scripts
 
-ENV PNPM_CONFIG_STORE_DIR=/cache/pnpm/store
-
 COPY --link ./package.json ./pnpm-lock.yaml ./vite.config.js /var/www/
 COPY --link ./resources /var/www/resources/
 COPY --link ./public /var/www/public/
 
 RUN --mount=type=cache,target=/cache \
+    --mount=type=cache,target=/data/pnpm/store \
     pnpm install --frozen-lockfile
 
 COPY --link ./ /var/www/
@@ -45,7 +44,6 @@ COPY --link ./php/files/ /
 
 ENV COREPACK_DEFAULT_TO_LATEST=0
 ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
-ENV PNPM_CONFIG_STORE_DIR=/cache/pnpm/store
 
 COPY --link ./package.json /var/www/
 

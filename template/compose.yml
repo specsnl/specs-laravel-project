@@ -11,7 +11,6 @@ services:
     environment:
       COREPACK_DEFAULT_TO_LATEST: 0
       COREPACK_ENABLE_DOWNLOAD_PROMPT: 0
-      PNPM_CONFIG_STORE_DIR: /cache/pnpm/store
 
   volume-init:
     image: busybox:1.38.0-musl
@@ -20,8 +19,10 @@ services:
       - sh
       - -c
       - |
+        # Docker copies the image's directory, including its owner, into a volume that is still empty
         mkdir -p /cache/node
-        chown -R ${FIXUID:-1000}:${FIXGID:-1000} /cache
+        touch /data/pnpm/store/.keep
+        chown -R ${FIXUID:-1000}:${FIXGID:-1000} /cache /data/pnpm/store
 
   php:
     user: ${FIXUID:-1000}:${FIXGID:-1000}

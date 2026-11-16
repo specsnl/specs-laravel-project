@@ -11,6 +11,7 @@ services:
     environment:
       COREPACK_DEFAULT_TO_LATEST: 0
       COREPACK_ENABLE_DOWNLOAD_PROMPT: 0
+      PNPM_CONFIG_STORE_DIR: /cache/pnpm/store
 
   volume-init:
     image: busybox:1.38.0-musl

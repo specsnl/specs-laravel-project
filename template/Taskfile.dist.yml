@@ -16,7 +16,7 @@ silent: true
 includes:
   composer: .taskfiles/Taskfile.composer.yml
   artisan: .taskfiles/Taskfile.artisan.yml
-  npm: .taskfiles/Taskfile.npm.yml
+  pnpm: .taskfiles/Taskfile.pnpm.yml
   db: .taskfiles/Taskfile.db.yml
 [[- if .AddE2E ]]
   e2e: .taskfiles/Taskfile.e2e.yml
@@ -102,7 +102,7 @@ tasks:
       - task: setup:env-file:local
       - task: setup:env-file:testing
       - task: composer:install
-      - task: npm:install
+      - task: pnpm:install
       - task: dc
         vars: { SUB_CMD: 'up -d' }
       - task: artisan:run:key:generate
@@ -111,7 +111,7 @@ tasks:
       - task: dc:run:php
         vars: { SUB_CMD: 'bash -c "wait-for-it [[ .DbHost ]]:[[ .DbPort ]] --timeout=0 --strict -- echo \"Done waiting\""' }
       - task: db:migrate-fresh:local
-      - task: npm:script:build
+      - task: pnpm:script:build
 [[- end ]]
 
   stop:
@@ -183,8 +183,8 @@ tasks:
       # - task: setup:env-file:local # for now comment because user might lose existing .env values... will add a "smarter" way to do this later
       - task: setup:env-file:testing
       - task: composer:install
-      - task: npm:install
+      - task: pnpm:install
       # We are only adding new migrations and not running migrate:refresh so we don't lose our data for the dev environment:
       - task: db:migrate:local
       - task: db:migrate-fresh:testing
-      - task: npm:script:build
+      - task: pnpm:script:build

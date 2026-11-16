@@ -24,4 +24,4 @@ tasks:
       - task: :setup:auth
       - task: :dc:run:php-exec
         vars:
-          SUB_CMD: bash -c "shopt -s globstar && npx --yes markdown-table-formatter **/*.md"
+          SUB_CMD: bash -c "shopt -s globstar && pnpm dlx markdown-table-formatter **/*.md"

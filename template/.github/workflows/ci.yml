@@ -14,8 +14,8 @@ permissions:
   contents: read
 
 jobs:
-  setup-npm-cache:
-    name: Setup NPM cache
+  setup-pnpm-cache:
+    name: Setup pnpm cache
     runs-on: ubuntu-26.04
     steps:
       - name: Checkout repository
@@ -54,10 +54,10 @@ jobs:
       - name: Validate composer.json and composer.lock
         run: composer validate --strict
 
-  audit-npm:
-    name: Dependency Audit NPM
+  audit-pnpm:
+    name: Dependency Audit pnpm
     runs-on: ubuntu-26.04
-    needs: [setup-npm-cache]
+    needs: [setup-pnpm-cache]
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -65,8 +65,8 @@ jobs:
         uses: ./.github/actions/setup-node
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Audit check for NPM
-        run: npm audit
+      - name: Audit check for pnpm
+        run: pnpm audit
 
   check-db-image:
     name: Check DB image matches compose.yml
@@ -169,7 +169,7 @@ jobs:
   be-unit-tests:
     name: Check back-end unit tests
     runs-on: ubuntu-26.04
-    needs: [setup-npm-cache, setup-composer-cache]
+    needs: [setup-pnpm-cache, setup-composer-cache]
     services:
       [[- if eq .Database "postgres" ]]
       db_app:
@@ -219,7 +219,7 @@ jobs:
         uses: ./.github/actions/setup-node
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          run-npm-build: true
+          run-pnpm-build: true
       - name: Run composer dump-autoload
         run: composer dump-autoload
       - name: Run migrations
@@ -351,7 +351,7 @@ jobs:
   e2e-check-tests:
     name: Check E2E tests
     runs-on: ubuntu-26.04
-    needs: [setup-npm-cache, setup-composer-cache]
+    needs: [setup-pnpm-cache, setup-composer-cache]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
@@ -367,13 +367,6 @@ jobs:
         env:
           COMPOSER_AUTH_JSON: ${{ secrets.COMPOSER_AUTH_JSON }}
         run: echo "$COMPOSER_AUTH_JSON" > auth.json
-      - name: Setup Node (warms ~/.npm for Docker npm cache mount)
-        uses: actions/setup-node@v7
-        with:
-          node-version-file: .nvmrc
-          cache: npm
-          registry-url: https://npm.pkg.github.com
-          token: ${{ secrets.GITHUB_TOKEN }}
       - name: Install Task
         uses: go-task/setup-task@v2
         with:

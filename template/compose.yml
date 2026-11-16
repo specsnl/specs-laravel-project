@@ -19,8 +19,10 @@ services:
       - sh
       - -c
       - |
+        # Docker copies the image's directory, including its owner, into a volume that is still empty
         mkdir -p /cache/node
-        chown -R ${FIXUID:-1000}:${FIXGID:-1000} /cache
+        touch /data/pnpm/store/.keep
+        chown -R ${FIXUID:-1000}:${FIXGID:-1000} /cache /data/pnpm/store
 
   php:
     user: ${FIXUID:-1000}:${FIXGID:-1000}

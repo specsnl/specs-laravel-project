@@ -1,11 +1,13 @@
 volumes:
   cache:
+  pnpm_store:
   db_data:
 
 services:
   volume-init:
     volumes:
       - cache:/cache
+      - pnpm_store:/data/pnpm/store
 
   php-exec:
     depends_on:
@@ -14,6 +16,7 @@ services:
     volumes:
       - ./:/var/www/
       - cache:/cache
+      - pnpm_store:/data/pnpm/store
       - ./auth.json:/config/composer/auth.json:ro
 
   php:
@@ -23,6 +26,7 @@ services:
     volumes:
       - ./:/var/www/
       - cache:/cache
+      - pnpm_store:/data/pnpm/store
       - ./auth.json:/config/composer/auth.json:ro
 
   worker:
@@ -32,6 +36,7 @@ services:
     volumes:
       - ./:/var/www/
       - cache:/cache
+      - pnpm_store:/data/pnpm/store
       - ./auth.json:/config/composer/auth.json:ro
 
   nginx:

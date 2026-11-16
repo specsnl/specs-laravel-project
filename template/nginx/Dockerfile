@@ -8,16 +8,17 @@ RUN --mount=type=cache,target=/cache \
     --mount=type=secret,id=composer_auth,env=COMPOSER_AUTH \
     composer install --no-progress --prefer-dist --no-dev --no-scripts
 
-COPY --link package.json package-lock.json vite.config.js /var/www/
+COPY --link package.json pnpm-lock.yaml vite.config.js /var/www/
 COPY --link resources /var/www/resources/
 COPY --link public /var/www/public/
 
 RUN --mount=type=cache,target=/cache \
-    npm ci
+    --mount=type=cache,target=/data/pnpm/store \
+    pnpm install --frozen-lockfile
 
 COPY --link ./ /var/www/
 
-RUN npm run build
+RUN pnpm run build
 
 # https://hub.docker.com/_/alpine
 FROM alpine:3.23.8 AS files

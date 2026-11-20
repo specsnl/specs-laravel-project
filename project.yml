@@ -13,6 +13,9 @@ RepoName: specsnl/project
 ComposerLicense:
   - MIT
   - proprietary
+IssueTracker:
+  - github
+  - linear
 IssuePrefix: ACME
 Database:
   - postgres

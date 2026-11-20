@@ -1,13 +1,13 @@
 {
     "extraKnownMarketplaces": {
-        "specs": {
+        "[[ .Marketplace ]]": {
             "source": {
                 "source": "github",
-                "repo": "specsnl/agent-specs"
+                "repo": "[[ .MarketplaceRepo ]]"
             }
         }
     },
     "enabledPlugins": {
-        "laravel@specs": true
+        "laravel@[[ .Marketplace ]]": true
     }
 }

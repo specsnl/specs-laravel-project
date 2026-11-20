@@ -16,6 +16,9 @@ ComposerLicense:
 IssueTracker:
   - github
   - linear
+RepoVisibility:
+  - public
+  - private
 IssuePrefix: ACME
 Database:
   - postgres
@@ -43,6 +46,12 @@ computed:
   DbUsername: >-
     [[ .ProjectShortName | toSnakeCase ]]
   DbPassword: password
+
+  # Claude Code plugin marketplace
+  Marketplace: >-
+    [[ eq .RepoVisibility "private" | ternary "specs-private" "specs" ]]
+  MarketplaceRepo: >-
+    [[ eq .RepoVisibility "private" | ternary "specsnl/agent-specs-private" "specsnl/agent-specs" ]]
 
   # PHP Images
   Php85DockerTag: "0.6.1" # Latest version: https://github.com/specsnl/php85/releases/latest

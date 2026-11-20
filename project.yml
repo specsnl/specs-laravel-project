@@ -14,8 +14,8 @@ ComposerLicense:
   - MIT
   - proprietary
 IssueTracker:
-  - linear
   - github
+  - linear
 IssuePrefix: ACME
 Database:
   - postgres

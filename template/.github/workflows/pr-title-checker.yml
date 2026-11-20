@@ -20,7 +20,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          requireScope: true
+          requireScope: ${{ !startsWith(github.event.pull_request.title, 'chore:') }}
           scopes: |
             [[ if eq .IssueTracker "linear" ]][[ .IssuePrefix ]]-\d{1,6}[[ else ]]#\d{1,6}[[ end ]]
             [\w.-]+/[\w.-]+#\d{1,6}

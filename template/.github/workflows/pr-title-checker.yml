@@ -22,6 +22,7 @@ jobs:
         with:
           requireScope: true
           scopes: |
-            [[ .IssuePrefix ]]-\d{1,6}
+            [[ if eq .IssueTracker "linear" ]][[ .IssuePrefix ]]-\d{1,6}[[ else ]]#\d{1,6}[[ end ]]
+            [\w.-]+/[\w.-]+#\d{1,6}
             deps
             deps-dev

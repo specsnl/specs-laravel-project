@@ -25,16 +25,20 @@
                 "strict_required_status_checks_policy": false,
                 "do_not_enforce_on_create": true,
                 "required_status_checks": [
+                    {
+                        "context": "Build Docker images",
+                        "integration_id": 15368
+                    },
+                    {
+                        "context": "Check DB image matches compose.yml",
+                        "integration_id": 15368
+                    },
                     [[- if .AddE2E ]]
                     {
                         "context": "Check E2E tests",
                         "integration_id": 15368
                     },
                     [[- end ]]
-                    {
-                        "context": "Check Model DocBlocks",
-                        "integration_id": 15368
-                    },
                     {
                         "context": "Check back-end Code Style",
                         "integration_id": 15368

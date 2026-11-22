@@ -2,8 +2,6 @@
 
 FROM [[ .PhpImage ]]/builder:[[ .PhpDockerTag ]] AS deps
 
-ARG COMPOSER_AUTH
-
 COPY --link ./composer.json ./composer.lock /var/www/
 
 RUN --mount=type=cache,target=/cache \
@@ -62,8 +60,6 @@ FROM builder-base AS builder-local
 
 FROM [[ .PhpImage ]]/builder:[[ .PhpDockerTag ]] AS prod-precompile
 
-ARG COMPOSER_AUTH
-
 COPY --link --from=deps /var/www /var/www/
 
 RUN --mount=type=cache,target=/cache \
@@ -75,14 +71,14 @@ RUN --mount=type=cache,target=/cache \
         --no-progress \
         --prefer-dist
 
+ENV APP_ENV=production
+
 # A placeholder APP_KEY is required to boot the application for cache
 # generation. It is a dummy value — the real key is injected at runtime via
 # environment variables or a secret manager.
 # 43 A's + '=' decodes to exactly 32 bytes, satisfying AES-256-CBC requirements.
-ENV APP_KEY=base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
-ENV APP_ENV=production
-
-RUN php artisan package:discover --ansi \
+RUN export APP_KEY=base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA= \
+    && php artisan package:discover --ansi \
     && php artisan route:cache \
     && php artisan event:cache \
     && php artisan view:cache

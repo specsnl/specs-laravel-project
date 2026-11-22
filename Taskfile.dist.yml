@@ -1,7 +1,7 @@
 # https://taskfile.dev
 version: '3.50'
 
-silent: true
+# silent: true
 
 vars:
   SPECS_TEMPLATE_NAME: specs-laravel-project
@@ -37,7 +37,14 @@ tasks:
     deps: [ cleanup:ignored, test:cleanup ]
     cmds:
       - specs template save . "{{ .SPECS_TEMPLATE_TEST_NAME }}" --force
-      - specs template use "{{ .SPECS_TEMPLATE_TEST_NAME }}" "../{{ .SPECS_TEMPLATE_TEST_NAME }}" --use-defaults {{ .CLI_ARGS }}
+      - >-
+        specs template use "{{ .SPECS_TEMPLATE_TEST_NAME }}"
+        --arg AddBugSnag=true
+        --arg AddFilament=true
+        --arg AddE2E=true
+        --use-defaults
+        "../{{ .SPECS_TEMPLATE_TEST_NAME }}"
+        {{ .CLI_ARGS }}
       - git -C "../{{ .SPECS_TEMPLATE_TEST_NAME }}" commit -m "Initial commit"
       - git -C "../{{ .SPECS_TEMPLATE_TEST_NAME }}" remote add origin git@github.com:specsnl/laravel-project-test.git
       - git -C "../{{ .SPECS_TEMPLATE_TEST_NAME }}" fetch

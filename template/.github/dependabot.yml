@@ -1,6 +1,13 @@
 # Config options: https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
 
 version: 2
+multi-ecosystem-groups:
+  specsnl-php-images:
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: build
+      include: scope
 updates:
   - package-ecosystem: composer
     directory: /
@@ -84,13 +91,9 @@ updates:
     labels:
       - dependencies
       - docker
-    commit-message:
-      prefix: build
-      include: scope
-    groups:
-      specsnl-php-images:
-        patterns:
-          - "specsnl/php*"
+    multi-ecosystem-group: specsnl-php-images
+    patterns:
+      - "specsnl/php*"
   - package-ecosystem: docker-compose
     directory: /
     schedule:
@@ -113,10 +116,6 @@ updates:
     labels:
       - dependencies
       - docker
-    commit-message:
-      prefix: build
-      include: scope
-    groups:
-      specsnl-php-images:
-        patterns:
-          - "specsnl/php*"
+    multi-ecosystem-group: specsnl-php-images
+    patterns:
+      - "specsnl/php*"

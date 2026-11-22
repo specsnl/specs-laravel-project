@@ -162,9 +162,17 @@ jobs:
           context: .
           file: nginx/Dockerfile
           push: false
+[[- if .AddFilament ]]
+          load: true
+          tags: nginx:ci
+[[- end ]]
           secret-envs: composer_auth=COMPOSER_AUTH_JSON
           cache-from: type=gha,scope=nginx
           cache-to: type=gha,scope=nginx,mode=max
+[[- if .AddFilament ]]
+      - name: Check that the nginx image has the Filament assets
+        run: docker run --rm --entrypoint test nginx:ci -d /var/www/public/js/filament
+[[- end ]]
 
   be-unit-tests:
     name: Check back-end unit tests

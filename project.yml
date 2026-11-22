@@ -54,7 +54,7 @@ computed:
   Marketplace: >-
     [[ eq .RepoVisibility "private" | ternary "specs-private" "specs" ]]
   MarketplaceRepo: >-
-    [[ eq .RepoVisibility "private" | ternary "specsnl/agent-specs-private" "specsnl/agent-specs" ]]
+    [[ eq .RepoVisibility "private" | ternary "specsnl/agent-skills-private" "specsnl/agent-skills" ]]
 
   # PHP Images
   Php85DockerTag: "0.6.1" # Latest version: https://github.com/specsnl/php85/releases/latest

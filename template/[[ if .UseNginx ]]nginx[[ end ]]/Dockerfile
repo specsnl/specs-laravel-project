@@ -17,6 +17,11 @@ RUN --mount=type=cache,target=/cache \
     pnpm install --frozen-lockfile
 
 COPY --link ./ /var/www/
+[[- if .AddFilament ]]
+
+# The install above skips the scripts, so filament:upgrade never published the Filament assets
+RUN php artisan filament:assets
+[[- end ]]
 
 RUN pnpm run build
 

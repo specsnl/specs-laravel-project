@@ -1,0 +1,55 @@
+# FrankenPHP Caddyfile for Laravel: https://frankenphp.dev/docs/config/
+#
+# Environment variables:
+# - SERVER_NAME: the address to listen on (default: :80)
+# - SERVER_ROOT: the document root (default: /var/www/public)
+# - CADDY_GLOBAL_OPTIONS: extra global options, e.g. "debug"
+# - CADDY_SERVER_EXTRA_DIRECTIVES: extra directives for the site
+# - FRANKENPHP_CONFIG: FrankenPHP options, e.g. "worker /var/www/public/index.php" for worker mode
+{
+	skip_install_trust
+
+	# TLS is terminated by the proxy in front of the container
+	auto_https off
+	admin off
+
+	servers {
+		trusted_proxies static private_ranges
+
+		timeouts {
+			read_body 5m
+			read_header 10s
+			write 5m
+			idle 2m
+		}
+	}
+
+	{$CADDY_GLOBAL_OPTIONS}
+
+	frankenphp {
+		{$FRANKENPHP_CONFIG}
+	}
+}
+
+{$SERVER_NAME::80} {
+	root * {$SERVER_ROOT:/var/www/public}
+
+	# Matches post_max_size in 020-upload-size.ini
+	request_body {
+		max_size 21MB
+	}
+
+	respond /livez 200
+	respond /readyz 200
+
+	encode zstd br gzip
+
+	{$CADDY_SERVER_EXTRA_DIRECTIVES}
+
+	php_server
+
+	log {
+		output stdout
+		format console
+	}
+}

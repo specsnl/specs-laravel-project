@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM ghcr.io/specsnl/php[[ .PhpVersion | replace "."  "" ]]/builder:[[ .PhpDockerTag]] AS deps
+FROM [[ .PhpImage ]]/builder:[[ .PhpDockerTag ]] AS deps
 
 ARG COMPOSER_AUTH
 
@@ -26,7 +26,7 @@ RUN --mount=type=cache,target=/cache \
 
 RUN pnpm run build
 
-FROM ghcr.io/specsnl/php[[ .PhpVersion | replace "."  "" ]]/builder:[[ .PhpDockerTag ]] AS builder-base
+FROM [[ .PhpImage ]]/builder:[[ .PhpDockerTag ]] AS builder-base
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -60,7 +60,7 @@ COPY --link --from=deps /var/www /var/www/
 
 FROM builder-base AS builder-local
 
-FROM ghcr.io/specsnl/php[[ .PhpVersion | replace "."  "" ]]/builder:[[ .PhpDockerTag ]] AS prod-precompile
+FROM [[ .PhpImage ]]/builder:[[ .PhpDockerTag ]] AS prod-precompile
 
 ARG COMPOSER_AUTH
 
@@ -89,7 +89,7 @@ RUN php artisan package:discover --ansi \
 
 RUN chown -R www-data: /var/www/storage /var/www/bootstrap/cache
 
-FROM ghcr.io/specsnl/php[[ .PhpVersion | replace "."  "" ]]:[[ .PhpDockerTag ]] AS runtime
+FROM [[ .PhpImage ]]:[[ .PhpDockerTag ]] AS runtime
 
 COPY --link app/ /var/www/app/
 COPY --link config/ /var/www/config/
@@ -107,6 +107,11 @@ COPY --from=prod-precompile /var/www/bootstrap/cache /var/www/bootstrap/cache/
 COPY --from=prod-precompile /var/www/storage/framework /var/www/storage/framework/
 
 COPY --link ./php/files/ /
+[[- if .UseFrankenphp ]]
+
+# FrankenPHP serves public/ itself, so the uploads are served through this link
+RUN ln -s /var/www/storage/app/public /var/www/public/storage
+[[- end ]]
 
 RUN chown -R www-data: /var/www/storage /var/www/bootstrap/cache
 

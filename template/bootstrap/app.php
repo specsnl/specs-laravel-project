@@ -19,7 +19,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+[[- if .UseFrankenphp ]]
+        // The private_ranges of trusted_proxies in the Caddyfile, where the reverse proxy in front sets the X-Forwarded-* headers
+        $middleware->trustProxies(at: ['192.168.0.0/16', '172.16.0.0/12', '10.0.0.0/8', '127.0.0.1/8', 'fd00::/8', '::1']);
+[[- else ]]
         //
+[[- end ]]
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

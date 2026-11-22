@@ -43,6 +43,7 @@ compose*.yml
 /public/image
 /public/css
 /public/js
+/public/fonts/filament
 
 .dockerignore
 **/Dockerfile

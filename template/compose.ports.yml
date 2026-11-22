@@ -1,7 +1,7 @@
 services:
-  nginx:
+  [[ if .UseFrankenphp ]]php[[ else ]]nginx[[ end ]]:
     ports:
-      - ${DOCKER_NGINX_PORT:-8080}:80
+      - ${[[ .WebPortEnv ]]:-8080}:80
 
   db_app:
     ports:

@@ -1,35 +1,55 @@
 # syntax=docker/dockerfile:1
 
-FROM ghcr.io/specsnl/php[[ .PhpVersion | replace "."  "" ]]/builder:[[ .PhpDockerTag ]] AS deps
+# The production Composer packages, without the autoloader
+FROM ghcr.io/specsnl/php[[ .PhpVersion | replace "."  "" ]]/builder:[[ .PhpDockerTag ]] AS vendor
 
 COPY --link ./composer.json ./composer.lock /var/www/
 
 RUN --mount=type=cache,target=/cache \
     --mount=type=secret,id=composer_auth,env=COMPOSER_AUTH \
-    composer install --no-progress --prefer-dist --no-dev --no-scripts
+    composer install \
+        --no-dev \
+        --no-scripts \
+        --no-autoloader \
+        --no-progress \
+        --prefer-dist
 
-COPY --link package.json pnpm-lock.yaml pnpm-workspace.yaml vite.config.js /var/www/
-COPY --link resources /var/www/resources/
-COPY --link public /var/www/public/
+# The Vite build. Tailwind scans the vendor views for classes.
+FROM ghcr.io/specsnl/php[[ .PhpVersion | replace "."  "" ]]/builder:[[ .PhpDockerTag ]] AS assets
+
+COPY --link ./package.json ./pnpm-lock.yaml ./pnpm-workspace.yaml /var/www/
 
 RUN --mount=type=cache,target=/cache \
     --mount=type=cache,target=/data/pnpm/store \
     pnpm install --frozen-lockfile
 
-COPY --link ./ /var/www/
-[[- if .AddFilament ]]
-
-# The install above skips the scripts, so filament:upgrade never published the Filament assets
-RUN php artisan filament:assets
-[[- end ]]
+COPY --link ./vite.config.js /var/www/
+COPY --link ./resources /var/www/resources/
+COPY --link --from=vendor /var/www/vendor /var/www/vendor/
 
 RUN pnpm run build
+
+# The files nginx serves
+FROM ghcr.io/specsnl/php[[ .PhpVersion | replace "."  "" ]]/builder:[[ .PhpDockerTag ]] AS public
+[[- if .AddFilament ]]
+
+COPY --link ./ /var/www/
+COPY --link --from=vendor /var/www/vendor /var/www/vendor/
+
+# The Composer scripts publish the Filament assets (filament:upgrade)
+RUN composer dump-autoload --no-dev
+[[- else ]]
+
+COPY --link ./public /var/www/public/
+[[- end ]]
+
+COPY --link --from=assets /var/www/public/build/ /var/www/public/build/
 
 # https://hub.docker.com/_/alpine
 FROM alpine:3.23.8 AS files
 
 COPY --link ./nginx/files /files/
-COPY --link --from=deps /var/www/public/ /files/var/www/public/
+COPY --link --from=public /var/www/public/ /files/var/www/public/
 
 RUN chmod -R go-w /files/var/www/public
 

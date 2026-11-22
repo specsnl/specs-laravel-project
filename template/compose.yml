@@ -29,7 +29,7 @@ services:
     build:
       context: .
       dockerfile: php/Dockerfile
-      target: builder-local
+      target: dev
       secrets:
         - composer_auth
     secrets:
@@ -49,7 +49,7 @@ services:
     build:
       context: .
       dockerfile: php/Dockerfile
-      target: builder-local
+      target: dev
       secrets:
         - composer_auth
     restart: unless-stopped

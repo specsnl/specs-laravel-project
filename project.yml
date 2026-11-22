@@ -24,6 +24,9 @@ Database:
   - postgres
   - mariadb
   - mysql
+WebServer:
+  - nginx
+  - frankenphp
 AddBugSnag: false
 AddFilament: false
 AddE2E: false
@@ -59,6 +62,16 @@ computed:
   Php83DockerTag: "1.9.1" # Latest version: https://github.com/specsnl/php83/releases/latest
   PhpDockerTag: >-
     [[ eq .PhpVersion "8.4" | ternary .Php84DockerTag (eq .PhpVersion "8.3" | ternary .Php83DockerTag .Php85DockerTag) ]]
+  PhpImage: >-
+    ghcr.io/specsnl/php[[ .PhpVersion | replace "." "" ]][[ if eq .WebServer "frankenphp" ]]/frankenphp[[ end ]]
+
+  # Web server: empty when false, so the values work in [[ if ]] and in file names
+  UseNginx: >-
+    [[ if eq .WebServer "nginx" ]]true[[ end ]]
+  UseFrankenphp: >-
+    [[ if eq .WebServer "frankenphp" ]]true[[ end ]]
+  WebPortEnv: >-
+    [[ eq .WebServer "frankenphp" | ternary "DOCKER_FRANKENPHP_PORT" "DOCKER_NGINX_PORT" ]]
 
   # Database images
   PostgresImageTag: "postgres:18.7-trixie" # Latest version: https://hub.docker.com/_/postgres/tags

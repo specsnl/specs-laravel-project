@@ -78,7 +78,9 @@ updates:
   - package-ecosystem: docker
     directories:
       - /php
+[[- if .UseNginx ]]
       - /nginx
+[[- end ]]
     schedule:
       interval: weekly
     cooldown:

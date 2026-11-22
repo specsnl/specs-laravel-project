@@ -1,0 +1,41 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Tests\Feature;
+
+use Illuminate\Http\Request;
+use Illuminate\Routing\Router;
+
+class TrustedProxiesTest extends FeatureTestCase
+{
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->app->make(Router::class)->get('/trusted-proxies-test', static fn (Request $request): array => [
+            'secure' => $request->isSecure(),
+            'ip' => $request->ip(),
+        ]);
+    }
+
+    public function testForwardedHeadersFromAPrivateProxyAreTrusted(): void
+    {
+        $response = $this->withServerVariables(['REMOTE_ADDR' => '10.88.0.1'])
+            ->withHeaders(['X-Forwarded-Proto' => 'https', 'X-Forwarded-For' => '203.0.113.9'])
+            ->getJson('/trusted-proxies-test');
+
+        $response->assertOk()
+            ->assertExactJson(['secure' => true, 'ip' => '203.0.113.9']);
+    }
+
+    public function testForwardedHeadersFromAPublicAddressAreIgnored(): void
+    {
+        $response = $this->withServerVariables(['REMOTE_ADDR' => '198.51.100.7'])
+            ->withHeaders(['X-Forwarded-Proto' => 'https', 'X-Forwarded-For' => '203.0.113.9'])
+            ->getJson('/trusted-proxies-test');
+
+        $response->assertOk()
+            ->assertExactJson(['secure' => false, 'ip' => '198.51.100.7']);
+    }
+}

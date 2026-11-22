@@ -28,6 +28,9 @@ services:
       - cache:/cache
       - pnpm_store:/data/pnpm/store
       - ./auth.json:/config/composer/auth.json:ro
+[[- if .UseFrankenphp ]]
+      - ./php/files/etc/frankenphp/Caddyfile:/etc/frankenphp/Caddyfile:ro
+[[- end ]]
 
   worker:
     depends_on:
@@ -39,10 +42,13 @@ services:
       - pnpm_store:/data/pnpm/store
       - ./auth.json:/config/composer/auth.json:ro
 
+[[- if .UseNginx ]]
+
   nginx:
     volumes:
       - ./public:/var/www/public
       - ./storage:/var/www/storage
+[[- end ]]
 
   db_app:
     volumes:

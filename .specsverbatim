@@ -1,0 +1,4 @@
+# Copied byte for byte without rendering. The Specs CLI skips files whose rendered
+# content is empty, so empty files have to be listed here to end up in the project.
+*.gitkeep
+public/favicon.ico

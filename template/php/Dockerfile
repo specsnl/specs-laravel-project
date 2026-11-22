@@ -1,30 +1,7 @@
 # syntax=docker/dockerfile:1
 
-FROM [[ .PhpImage ]]/builder:[[ .PhpDockerTag ]] AS deps
-
-COPY --link ./composer.json ./composer.lock /var/www/
-
-RUN --mount=type=cache,target=/cache \
-    --mount=type=secret,id=composer_auth,env=COMPOSER_AUTH \
-    composer install --no-progress --prefer-dist --no-scripts
-
-COPY --link ./package.json ./pnpm-lock.yaml ./pnpm-workspace.yaml ./vite.config.js /var/www/
-COPY --link ./resources /var/www/resources/
-COPY --link ./public /var/www/public/
-
-RUN --mount=type=cache,target=/cache \
-    --mount=type=cache,target=/data/pnpm/store \
-    pnpm install --frozen-lockfile
-
-COPY --link ./ /var/www/
-
-RUN --mount=type=cache,target=/cache \
-    --mount=type=secret,id=composer_auth,env=COMPOSER_AUTH \
-    composer install --no-progress --prefer-dist
-
-RUN pnpm run build
-
-FROM [[ .PhpImage ]]/builder:[[ .PhpDockerTag ]] AS builder-base
+# The development image: compose mounts the source into it
+FROM [[ .PhpImage ]]/builder:[[ .PhpDockerTag ]] AS dev
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -52,64 +29,80 @@ corepack install \
 ENTRYPOINT ["fixuid", "-q"]
 CMD ["docker-cmd.sh"]
 
-FROM builder-base AS builder
+# The production Composer packages, without the autoloader: app-build generates it
+FROM [[ .PhpImage ]]/builder:[[ .PhpDockerTag ]] AS vendor
 
-COPY --link --from=deps /var/www /var/www/
-
-FROM builder-base AS builder-local
-
-FROM [[ .PhpImage ]]/builder:[[ .PhpDockerTag ]] AS prod-precompile
-
-COPY --link --from=deps /var/www /var/www/
+COPY --link ./composer.json ./composer.lock /var/www/
 
 RUN --mount=type=cache,target=/cache \
     --mount=type=secret,id=composer_auth,env=COMPOSER_AUTH \
     composer install \
         --no-dev \
-        --classmap-authoritative \
-        --optimize-autoloader \
+        --no-scripts \
+        --no-autoloader \
         --no-progress \
         --prefer-dist
 
+# The Vite build. Tailwind scans the vendor views for classes.
+FROM [[ .PhpImage ]]/builder:[[ .PhpDockerTag ]] AS assets
+
+COPY --link ./package.json ./pnpm-lock.yaml ./pnpm-workspace.yaml /var/www/
+
+RUN --mount=type=cache,target=/cache \
+    --mount=type=cache,target=/data/pnpm/store \
+    pnpm install --frozen-lockfile
+
+COPY --link ./vite.config.js /var/www/
+COPY --link ./resources /var/www/resources/
+COPY --link --from=vendor /var/www/vendor /var/www/vendor/
+
+RUN pnpm run build
+
+# The application files of the runtime image, with the autoloader and the artisan caches
+FROM [[ .PhpImage ]]/builder:[[ .PhpDockerTag ]] AS app-build
+
 ENV APP_ENV=production
+
+COPY --link --from=vendor /var/www/vendor /var/www/vendor/
+
+COPY --link ./composer.json ./artisan /var/www/
+COPY --link ./app /var/www/app/
+COPY --link ./bootstrap /var/www/bootstrap/
+COPY --link ./config /var/www/config/
+COPY --link ./database/migrations /var/www/database/migrations/
+COPY --link ./public /var/www/public/
+COPY --link ./resources/views /var/www/resources/views/
+COPY --link ./routes /var/www/routes/
+COPY --link ./storage /var/www/storage/
+
+# Also runs the Composer scripts, such as package:discover
+RUN composer dump-autoload \
+        --no-dev \
+        --classmap-authoritative
 
 # A placeholder APP_KEY is required to boot the application for cache
 # generation. It is a dummy value — the real key is injected at runtime via
 # environment variables or a secret manager.
 # 43 A's + '=' decodes to exactly 32 bytes, satisfying AES-256-CBC requirements.
 RUN export APP_KEY=base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA= \
-    && php artisan package:discover --ansi \
     && php artisan route:cache \
     && php artisan event:cache \
     && php artisan view:cache
-
-RUN chown -R www-data: /var/www/storage /var/www/bootstrap/cache
-
-FROM [[ .PhpImage ]]:[[ .PhpDockerTag ]] AS runtime
-
-COPY --link app/ /var/www/app/
-COPY --link config/ /var/www/config/
-COPY --link database/migrations/ /var/www/database/migrations/
-COPY --link routes/ /var/www/routes/
-COPY --link resources/views/ /var/www/resources/views/
-COPY --link storage/ /var/www/storage/
-COPY --link artisan /var/www/artisan
-COPY --link bootstrap/app.php bootstrap/providers.php /var/www/bootstrap/
-
-COPY --link --from=deps /var/www/public /var/www/public/
-
-COPY --from=prod-precompile /var/www/vendor /var/www/vendor/
-COPY --from=prod-precompile /var/www/bootstrap/cache /var/www/bootstrap/cache/
-COPY --from=prod-precompile /var/www/storage/framework /var/www/storage/framework/
-
-COPY --link ./php/files/ /
 [[- if .UseFrankenphp ]]
 
 # FrankenPHP serves public/ itself, so the uploads are served through this link
 RUN ln -s /var/www/storage/app/public /var/www/public/storage
 [[- end ]]
 
-RUN chown -R www-data: /var/www/storage /var/www/bootstrap/cache
+# The production image
+FROM [[ .PhpImage ]]:[[ .PhpDockerTag ]] AS runtime
+
+COPY --link --from=app-build --exclude=storage --exclude=bootstrap/cache /var/www/ /var/www/
+COPY --link --from=assets /var/www/public/build/ /var/www/public/build/
+COPY --from=app-build --chown=www-data:www-data /var/www/storage/ /var/www/storage/
+COPY --from=app-build --chown=www-data:www-data /var/www/bootstrap/cache/ /var/www/bootstrap/cache/
+
+COPY --link ./php/files/ /
 
 ENTRYPOINT ["docker-php-entrypoint", "runtime-entrypoint.sh"]
 CMD ["docker-cmd.sh"]

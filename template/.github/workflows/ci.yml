@@ -157,12 +157,12 @@ jobs:
       - name: Check that the PHP runtime image has the Filament assets
         run: docker run --rm --entrypoint test php:ci -d /var/www/public/js/filament
 [[- end ]]
-      - name: Build PHP builder-local image
+      - name: Build PHP dev image
         uses: docker/build-push-action@v7
         with:
           context: .
           file: php/Dockerfile
-          target: builder-local
+          target: dev
           push: false
           secret-envs: composer_auth=COMPOSER_AUTH_JSON
           cache-from: type=gha,scope=php

@@ -52,7 +52,7 @@ start the project up again.
 
 #### Refreshing the application
 
-To refresh the project when for instance you are switching to a different branch, run `task app:refresh`. This will for
+To refresh the project when for instance you are switching to a different branch, run `task refresh`. This will for
 instance (re)fetch the composer and pnpm dependencies, run the migrations and rebuild the front-end assets
 
 #### Working with git worktrees

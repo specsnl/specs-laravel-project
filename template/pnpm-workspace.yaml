@@ -1,1 +1,2 @@
 # pnpm settings, such as overrides and allowBuilds: https://pnpm.io/settings
+packages: []

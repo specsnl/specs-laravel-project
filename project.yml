@@ -50,11 +50,9 @@ computed:
     [[ .ProjectShortName | toSnakeCase ]]
   DbPassword: password
 
-  # Claude Code plugin marketplace
-  Marketplace: >-
-    [[ eq .RepoVisibility "private" | ternary "specs-private" "specs" ]]
-  MarketplaceRepo: >-
-    [[ eq .RepoVisibility "private" | ternary "specsnl/agent-skills-private" "specsnl/agent-skills" ]]
+  # Claude Code plugin marketplace, only for private repositories: empty when false, so it works in file names
+  UsePrivateMarketplace: >-
+    [[ if eq .RepoVisibility "private" ]]true[[ end ]]
 
   # PHP Images
   Php85DockerTag: "0.6.1" # Latest version: https://github.com/specsnl/php85/releases/latest

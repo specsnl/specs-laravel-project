@@ -93,6 +93,7 @@ COPY --link routes/ /var/www/routes/
 COPY --link resources/views/ /var/www/resources/views/
 COPY --link storage/ /var/www/storage/
 COPY --link artisan /var/www/artisan
+COPY --link composer.json /var/www/composer.json
 COPY --link bootstrap/app.php bootstrap/providers.php /var/www/bootstrap/
 
 COPY --link --from=deps /var/www/public /var/www/public/

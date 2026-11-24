@@ -4,7 +4,7 @@ version: '3.50'
 silent: true
 
 vars:
-  SPECS_TEMPLATE_NAME: specs-laravel-project
+  SPECS_TEMPLATE_NAME: specs-laravel-project-template
   SPECS_TEMPLATE_TEST_NAME: '{{ .SPECS_TEMPLATE_NAME }}-test'
 
 tasks:
@@ -39,7 +39,7 @@ tasks:
       - specs template save . "{{ .SPECS_TEMPLATE_TEST_NAME }}" --force
       - specs template use "{{ .SPECS_TEMPLATE_TEST_NAME }}" "../{{ .SPECS_TEMPLATE_TEST_NAME }}" --use-defaults {{ .CLI_ARGS }}
       - git -C "../{{ .SPECS_TEMPLATE_TEST_NAME }}" commit -m "Initial commit"
-      - git -C "../{{ .SPECS_TEMPLATE_TEST_NAME }}" remote add origin git@github.com:specsnl/laravel-project-test.git
+      - git -C "../{{ .SPECS_TEMPLATE_TEST_NAME }}" remote add origin git@github.com:specsnl/{{ .SPECS_TEMPLATE_TEST_NAME }}.git
       - git -C "../{{ .SPECS_TEMPLATE_TEST_NAME }}" fetch
       - git -C "../{{ .SPECS_TEMPLATE_TEST_NAME }}" branch --set-upstream-to=origin/main main
       - code "../{{ .SPECS_TEMPLATE_TEST_NAME }}"
@@ -52,7 +52,7 @@ tasks:
       - specs template save . "{{ .SPECS_TEMPLATE_TEST_NAME }}" --force
       - specs template use "{{ .SPECS_TEMPLATE_TEST_NAME }}" "../{{ .SPECS_TEMPLATE_TEST_NAME }}"
       - git -C "../{{ .SPECS_TEMPLATE_TEST_NAME }}" commit -m "Initial commit"
-      - git -C "../{{ .SPECS_TEMPLATE_TEST_NAME }}" remote add origin git@github.com:specsnl/laravel-project-test.git
+      - git -C "../{{ .SPECS_TEMPLATE_TEST_NAME }}" remote add origin git@github.com:specsnl/{{ .SPECS_TEMPLATE_TEST_NAME }}.git
       - git -C "../{{ .SPECS_TEMPLATE_TEST_NAME }}" fetch
       - git -C "../{{ .SPECS_TEMPLATE_TEST_NAME }}" branch --set-upstream-to=origin/main main
       - code "../{{ .SPECS_TEMPLATE_TEST_NAME }}"

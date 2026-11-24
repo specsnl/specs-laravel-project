@@ -1,4 +1,4 @@
-# specs-laravel-project
+# specs-laravel-project-template
 
 A [Specs](https://github.com/specsnl/specs-cli) template for PHP Laravel 13 projects.
 
@@ -10,13 +10,13 @@ A [Specs](https://github.com/specsnl/specs-cli) template for PHP Laravel 13 proj
 Download the template and store it locally:
 
 ```bash
-specs template download github:specsnl/specs-laravel-project laravel-project
+specs template download github:specsnl/specs-laravel-project-template laravel-project
 ```
 
 Or use it directly without downloading:
 
 ```bash
-specs use github:specsnl/specs-laravel-project <dir-name>
+specs use github:specsnl/specs-laravel-project-template <dir-name>
 ```
 
 ## Overview task commands

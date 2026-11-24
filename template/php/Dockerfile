@@ -79,7 +79,6 @@ ENV APP_ENV=production
 # 43 A's + '=' decodes to exactly 32 bytes, satisfying AES-256-CBC requirements.
 RUN export APP_KEY=base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA= \
     && php artisan package:discover --ansi \
-    && php artisan route:cache \
     && php artisan event:cache \
     && php artisan view:cache
 
